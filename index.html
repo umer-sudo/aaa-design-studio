@@ -1,0 +1,945 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AAA Design Studio</title>
+<meta name="description" content="Concept prototype for Ali Arshad Associates: design a residence from a brief, explore it in 3D, study the Karachi sun, change the finish and present to the client.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Albert+Sans:wght@400;500;600&family=Red+Hat+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f5f1e8;--sheet:#fbf8f2;--model:#ece7dd;--stone:#ddd5c6;--stone2:#c8bead;
+  --ink:#23201c;--ink2:#565047;--dim:#857d70;--line:rgba(35,32,28,.14);--line2:rgba(35,32,28,.3);
+  --brass:#a07d3e;--brass2:#c6a56a;--brassbg:rgba(160,125,62,.1);
+  --serif:"Cormorant Garamond","Cormorant",Georgia,serif;--sans:"Albert Sans",ui-sans-serif,system-ui,sans-serif;--mono:"Red Hat Mono",ui-monospace,Menlo,monospace;
+  --rise:260ms;--fall:180ms;--ease:cubic-bezier(.2,.7,.1,1);--bar:54px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--paper);color-scheme:light;-webkit-text-size-adjust:100%}
+body{background:var(--paper);color:var(--ink);font:400 14px/1.5 var(--sans);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button,input,textarea{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+img{display:block;max-width:100%}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+.k{font:500 10.5px/1.2 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.k b{font-weight:500;color:var(--brass)}
+.truth{font:400 12px/1.5 var(--sans);color:var(--dim)}
+.truth b{font-weight:600;color:var(--ink2)}
+
+/* ---------- bar ---------- */
+.bar{height:var(--bar);display:flex;align-items:center;gap:18px;padding:0 22px;border-bottom:1px solid var(--line);background:var(--sheet);position:relative;z-index:5}
+.bar .logo{height:22px;width:auto;mix-blend-mode:multiply}
+.bar .rule{width:1px;height:22px;background:var(--line2)}
+.bar .name{font:500 21px/1 var(--serif);letter-spacing:.01em}
+.bar .proj{font:400 13px/1 var(--sans);color:var(--ink2)}
+.bar .meta{margin-left:auto;font:400 11px/1 var(--mono);color:var(--dim);letter-spacing:.04em;text-align:right}
+.bar .reset{font:400 11px/1 var(--mono);color:var(--dim);border-bottom:1px solid var(--line2);padding-bottom:2px}
+
+/* ---------- stage ---------- */
+.stage{display:grid;grid-template-columns:minmax(0,1fr) clamp(380px,29.5vw,460px);height:calc(100svh - var(--bar));min-height:620px}
+.vp{position:relative;background:var(--model);overflow:hidden;--vink:var(--ink);--vdim:var(--ink2);--vline:rgba(35,32,28,.22);transition:background .6s}
+.vp.dusk{--vink:#f1eadc;--vdim:#c9c1b2;--vline:rgba(241,234,220,.3)}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:grab;outline:0}
+#gl:active{cursor:grabbing}
+#labs{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lab{position:absolute;left:0;top:0;white-space:nowrap;font:500 10.5px/1.2 var(--mono);letter-spacing:.06em;color:var(--vink);transition:opacity .3s;will-change:transform}
+.lab.dim{color:var(--brass);background:var(--model);padding:1px 6px}
+.vp.dusk .lab.dim{background:#343a48;color:var(--brass2)}
+.lab.tag{text-transform:uppercase;letter-spacing:.2em;color:var(--vdim)}
+.lab.north{font:500 13px/1 var(--serif);color:var(--brass)}
+.lab.room{text-align:center;background:rgba(251,248,242,.92);color:var(--ink);padding:4px 8px 3px;border:1px solid var(--line)}
+.lab.room b{display:block;font:600 11px/1.2 var(--sans);letter-spacing:.02em}
+.lab.room i{display:block;font:400 9.5px/1.3 var(--mono);font-style:normal;color:var(--dim)}
+/* drawing frame: ticks on the sheet edge */
+.vp::before{content:"";position:absolute;inset:14px;border:1px solid var(--vline);pointer-events:none;z-index:1;transition:border-color .6s}
+.vtitle{position:absolute;left:34px;top:30px;z-index:2;pointer-events:none;color:var(--vink);transition:color .6s}
+.vtitle .k{color:var(--vdim)}
+.vtitle h1{font:500 clamp(30px,3.3vw,50px)/1 var(--serif);letter-spacing:-.01em;margin:10px 0 8px}
+.vtitle p{font:400 12px/1.4 var(--mono);color:var(--vdim);letter-spacing:.02em}
+.vsun{position:absolute;left:34px;bottom:32px;z-index:2;display:flex;align-items:center;gap:14px;color:var(--vink);pointer-events:none;transition:color .6s}
+.compass{width:58px;height:58px;flex:none}
+.compass circle{fill:none;stroke:var(--vline)}
+.compass .nd{transform-origin:29px 29px}
+.compass path{fill:var(--brass)}
+.compass text{font:500 9px var(--mono);fill:var(--vdim);text-anchor:middle}
+.vsun b{display:block;font:500 22px/1.05 var(--serif)}
+.vsun span{display:block;font:400 11px/1.5 var(--mono);color:var(--vdim)}
+.stamp{position:absolute;right:34px;top:32px;z-index:2;font:500 10px/1.5 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--vdim);text-align:right;pointer-events:none;transition:color .6s}
+.stamp b{display:inline-block;border:1px solid currentColor;padding:3px 7px 2px;margin-bottom:6px;font-weight:500;color:var(--brass);transform:rotate(-2deg)}
+.empty{position:absolute;right:34px;bottom:32px;z-index:1;pointer-events:none;transition:opacity .5s}
+.empty div{text-align:right;max-width:260px;color:var(--vdim);font-size:13px}
+.empty b{display:block;font:500 26px/1.1 var(--serif);color:var(--vink);margin-bottom:6px}
+.vp.built .empty{opacity:0}
+.vp.built .vtitle p{opacity:0}.vtitle p{transition:opacity .4s}.vtitle h1{transition:font-size .5s var(--ease)}
+.vp.built .vtitle h1{font-size:clamp(24px,2.3vw,34px)}
+.seltag{position:absolute;left:0;top:0;z-index:3;pointer-events:none;opacity:0;transition:opacity var(--fall)}
+.seltag.on{opacity:1}
+.seltag i{position:absolute;left:0;top:0;width:7px;height:7px;margin:-3.5px;border:1px solid var(--brass);background:var(--sheet);border-radius:50%}
+.seltag u{position:absolute;left:0;top:0;width:54px;height:1px;background:var(--brass);transform-origin:0 0;transform:rotate(-38deg)}
+.seltag div{position:absolute;left:42px;top:-34px;transform:translateY(-100%);background:var(--sheet);border:1px solid var(--brass2);padding:7px 11px 6px;white-space:nowrap;box-shadow:0 8px 24px -12px rgba(35,32,28,.5)}
+.seltag div b{display:block;font:600 12px/1.3 var(--sans)}
+.seltag div span{display:block;font:400 10.5px/1.4 var(--mono);color:var(--dim)}
+/* rain-mode markers on the model */
+.lab.mark{pointer-events:auto;cursor:pointer;width:26px;height:26px;border-radius:50%;background:var(--sheet);border:1.5px solid var(--brass);color:var(--ink);font:600 11px/23px var(--sans);text-align:center;letter-spacing:0;box-shadow:0 0 0 5px rgba(160,125,62,.18);transition:opacity .3s,background var(--fall),color var(--fall),box-shadow var(--fall)}
+.lab.mark:hover,.lab.mark.on{background:var(--brass);color:#fff;box-shadow:0 0 0 8px rgba(160,125,62,.26)}
+.lab.mark::after{content:"";position:absolute;inset:-9px}
+/* version rail */
+.rail{position:absolute;right:30px;bottom:30px;z-index:4;display:flex;gap:10px;align-items:flex-end;max-width:calc(100% - 330px)}
+.vcard{width:168px;flex:none;background:var(--sheet);border:1px solid var(--line2);text-align:left;position:relative;transition:transform var(--rise) var(--ease),border-color var(--fall);box-shadow:0 18px 40px -22px rgba(35,32,28,.55)}
+.vcard:hover{transform:translateY(-3px);border-color:var(--brass)}
+.vcard img{width:100%;aspect-ratio:16/9;object-fit:cover}
+.vcard .t{padding:7px 9px 8px}
+.vcard .t b{display:flex;justify-content:space-between;gap:6px;font:600 12px/1.3 var(--sans)}
+.vcard .t b em{font:500 10px/1.5 var(--mono);font-style:normal;color:var(--brass)}
+.vcard .t span{display:block;font:400 10px/1.45 var(--mono);color:var(--dim)}
+.vcard.ok::after{content:"Approved";position:absolute;left:6px;top:6px;background:var(--ink);color:var(--paper);font:500 9px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;padding:4px 6px 3px}
+/* the render, developing over the model */
+.develop{position:absolute;inset:0;z-index:6;overflow:hidden;visibility:hidden}
+.develop .clip{position:absolute;inset:0;overflow:hidden;background:#1d1b19}
+.develop.on{visibility:visible}
+.develop .pic{position:absolute;left:50%;top:0;height:100%;aspect-ratio:16/9;transform:translateX(-50%)}
+.develop .pic img{width:100%;height:100%;object-fit:cover}
+.develop .pin{position:absolute;width:22px;height:22px;margin:-11px;border-radius:50%;background:var(--brass);color:#fff;font:600 11px/22px var(--sans);text-align:center;box-shadow:0 0 0 2px rgba(255,255,255,.8)}
+.develop .bar2{position:absolute;top:0;bottom:0;width:1px;background:#fff;z-index:2;box-shadow:0 0 0 1px rgba(0,0,0,.12)}
+.develop .knob{position:absolute;top:50%;left:50%;width:44px;height:44px;margin:-22px;border-radius:50%;background:var(--sheet);border:1px solid var(--brass);cursor:ew-resize;display:grid;place-items:center;touch-action:none}
+.develop .knob::before{content:"";width:16px;height:8px;border-left:1px solid var(--ink);border-right:1px solid var(--ink)}
+.develop .cap{position:absolute;left:0;right:0;bottom:0;z-index:3;display:flex;align-items:flex-end;gap:18px;padding:60px 30px 26px;background:linear-gradient(transparent,rgba(20,18,16,.78));color:#f4eee2}
+.develop .cap .k{color:rgba(244,238,226,.7)}
+.develop .cap h3{font:500 30px/1.05 var(--serif);margin:6px 0 4px}
+.develop .cap p{font:400 11px/1.5 var(--mono);color:rgba(244,238,226,.78);max-width:560px}
+.develop .cap .acts{margin-left:auto;display:flex;gap:8px;flex:none;flex-wrap:wrap;justify-content:flex-end}
+.develop .cap button{border:1px solid rgba(244,238,226,.5);padding:10px 14px;font:500 12px/1 var(--sans);color:#f4eee2;min-height:40px;transition:background var(--fall)}
+.develop .cap button:hover,.develop .cap button[aria-pressed=true]{background:#f4eee2;color:var(--ink)}
+.develop .sideA,.develop .sideB{position:absolute;top:26px;z-index:3;font:500 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;padding:6px 8px 5px;background:rgba(251,248,242,.9);color:var(--ink)}
+.develop .sideA{left:28px}.develop .sideB{right:28px}
+.develop.sweep .cap,.develop.sweep .knob,.develop.sweep .sideA{opacity:0}
+.develop .cap{pointer-events:none}.develop .cap .acts{pointer-events:auto}
+.develop .cap,.develop .knob,.develop .sideA{transition:opacity .4s}
+.develop .note{position:absolute;z-index:4;display:flex;gap:6px;transform:translate(14px,-50%)}
+.develop .note input{width:220px;padding:8px 10px;border:1px solid var(--brass);background:var(--sheet);font-size:16px}
+.nogl{display:none;position:absolute;inset:0;z-index:1}
+.nogl img{width:100%;height:100%;object-fit:cover}
+.nogl p{position:absolute;left:30px;bottom:30px;right:30px;background:var(--sheet);padding:12px 14px;border:1px solid var(--line2);max-width:460px}
+html.no3d .nogl{display:block}html.no3d #gl,html.no3d .vsun,html.no3d .empty,html.no3d #labs{display:none}
+
+/* ---------- panel: the title block of the sheet ---------- */
+.panel{background:var(--sheet);border-left:1px solid var(--line2);display:flex;flex-direction:column;min-height:0;position:relative;z-index:2}
+.steps{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid var(--line2);flex:none}
+.steps button{padding:11px 2px 10px;text-align:center;border-right:1px solid var(--line);position:relative;color:var(--dim);min-height:52px;transition:color var(--fall),background var(--fall)}
+.steps button:last-child{border-right:0}
+.steps button i{display:block;font:500 9.5px/1 var(--mono);font-style:normal;letter-spacing:.08em;margin-bottom:6px}
+.steps button b{display:block;font:500 12px/1 var(--sans)}
+.steps button.done{color:var(--ink2)}
+.steps button.on{color:var(--ink);background:var(--paper)}
+.steps button.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--brass)}
+.steps button[aria-disabled=true]{opacity:.5}
+.steps{position:relative}
+.stephint{position:absolute;left:0;right:0;top:100%;z-index:5;grid-column:1/-1;max-height:0;overflow:hidden;background:var(--ink);color:var(--paper);font:500 12.5px/1.4 var(--sans);padding:0 26px;transition:max-height var(--rise) var(--ease),padding var(--rise) var(--ease)}
+.stephint.on{max-height:64px;padding:10px 26px}
+/* what was understood, item by item */
+.und{margin-top:14px;display:none;border-top:1px solid var(--line2)}
+.und.on{display:block}
+.und div{display:grid;grid-template-columns:22px 1fr;gap:9px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px;line-height:1.4;opacity:0;animation:row .32s var(--ease) forwards}
+.und div i{width:18px;height:18px;border-radius:50%;font:600 10.5px/17px var(--sans);font-style:normal;text-align:center;margin-top:1px;border:1.5px solid var(--line2);color:var(--dim)}
+.und .m i{background:var(--brass);border-color:var(--brass);color:#fff}
+.und .s i{border-color:var(--brass);color:var(--brass)}
+.und .u i{border-style:dashed}
+.und b{font-weight:600}
+.und span{display:block;font:400 10.5px/1.5 var(--mono);color:var(--dim)}
+.und .m span{color:var(--brass)}
+/* live DHA check, on the model */
+.dha{position:absolute;right:34px;top:92px;z-index:3;width:276px;background:rgba(251,248,242,.94);border:1px solid var(--line2);padding:10px 12px 9px;opacity:0;pointer-events:none;transition:opacity .4s}
+.vp.built .dha{opacity:1;pointer-events:auto}
+.dha h4{display:flex;justify-content:space-between;font:500 9.5px/1.3 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink);margin-bottom:6px}
+.dha h4 em{font-style:normal;color:var(--brass)}
+.dha div{display:grid;grid-template-columns:1fr auto 16px;gap:8px;align-items:baseline;padding:3.5px 0;border-top:1px solid var(--line);font:400 11.5px/1.3 var(--sans);color:var(--ink2);transition:background .5s}
+.dha div b{font:500 10.5px/1.3 var(--mono);color:var(--ink);text-align:right}
+.dha div b small{font-size:9px;color:var(--dim);font-weight:400}
+.dha div i{font:600 10px/15px var(--sans);font-style:normal;width:15px;height:15px;border-radius:50%;text-align:center;background:var(--ink);color:var(--paper)}
+.dha div.flag i{background:#9a3b1f}.dha div.flag b{color:#9a3b1f}
+.dha div.na i{background:none;color:var(--dim);border:1px solid var(--line2);line-height:13px}
+.dha div.chg{background:var(--brassbg)}
+.dha p{font:400 9px/1.4 var(--mono);color:var(--dim);margin-top:6px;padding-top:6px;border-top:1px solid var(--line)}
+.dha button{font:500 9.5px/1 var(--mono);color:var(--dim);letter-spacing:.06em}
+.dha.min div,.dha.min p{display:none}.dha.min{width:auto}.dha.min h4{margin:0;gap:14px}
+.panes{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.pane{display:none;padding:26px 26px 30px}
+.pane.on{display:block;animation:pane var(--rise) var(--ease)}
+@keyframes pane{from{opacity:0;transform:translateY(10px)}}
+.pane h2{font:500 32px/1.04 var(--serif);letter-spacing:-.005em;margin:10px 0 10px}
+.pane>p{color:var(--ink2);max-width:40ch}
+.go{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;margin-top:18px;padding:0 16px;min-height:48px;background:var(--ink);color:var(--paper);font:500 14px/1 var(--sans);transition:background var(--fall),transform 100ms}
+.go:hover{background:#000}.go:active{transform:scale(.985)}
+.go.alt{background:none;color:var(--ink);border:1px solid var(--line2)}
+.go.alt:hover{border-color:var(--ink);background:none}
+.go:disabled{opacity:.4;cursor:default}
+.go span:last-child{font-family:var(--mono)}
+.grp{margin-top:22px;padding-top:16px;border-top:1px solid var(--line)}
+.grp>.k{display:flex;justify-content:space-between;gap:10px;margin-bottom:11px}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;border:1px solid var(--line2)}
+.seg button{padding:0 4px;min-height:40px;font:500 12.5px/1 var(--sans);color:var(--ink2);border-right:1px solid var(--line);transition:background var(--fall),color var(--fall)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+textarea{width:100%;min-height:128px;margin-top:14px;padding:13px 14px;border:1px solid var(--line2);background:var(--paper);font:400 15px/1.55 var(--sans);resize:vertical;border-radius:0}
+textarea:focus{outline:0;border-color:var(--brass)}
+/* brief reading */
+.read{margin-top:18px;display:none}
+.read.on{display:block}
+.read table{width:100%;border-collapse:collapse;margin-top:8px}
+.read td{padding:6px 0;border-bottom:1px solid var(--line);font-size:13px;vertical-align:top}
+.read td:last-child{text-align:right;font:400 11.5px/1.6 var(--mono);color:var(--ink2);white-space:nowrap}
+.read tr{opacity:0;animation:row .32s var(--ease) forwards}
+@keyframes row{from{opacity:0;transform:translateX(-8px)}to{opacity:1}}
+.read ul{list-style:none;margin-top:8px}
+.read li{padding:5px 0 5px 16px;position:relative;font-size:13px;color:var(--ink2)}
+.read li::before{content:"";position:absolute;left:0;top:13px;width:8px;height:1px;background:var(--brass)}
+/* options */
+.opts{display:grid;gap:10px;margin-top:16px}
+.opt{display:grid;grid-template-columns:118px 1fr;gap:13px;text-align:left;border:1px solid var(--line2);padding:8px;background:var(--paper);transition:border-color var(--fall),background var(--fall)}
+.opt:hover{border-color:var(--ink)}
+.opt[aria-pressed=true]{border-color:var(--brass);background:var(--brassbg);box-shadow:inset 3px 0 0 var(--brass)}
+.opt img{width:118px;height:86px;object-fit:cover;background:var(--stone)}
+.opt b{display:block;font:500 21px/1.05 var(--serif);margin:3px 0 4px}
+.opt span{display:block;font-size:12.5px;line-height:1.4;color:var(--ink2)}
+.opt i{display:block;font:400 10.5px/1.5 var(--mono);font-style:normal;color:var(--dim);margin-top:5px}
+/* sun */
+.sun{display:grid;grid-template-columns:1fr 124px;gap:16px;align-items:center}
+.sl{display:grid;grid-template-columns:auto 1fr;gap:4px 10px;align-items:center;margin-bottom:12px}
+.sl label{font:500 12px/1 var(--sans)}
+.sl output{font:400 11.5px/1 var(--mono);color:var(--ink2);text-align:right}
+.sl input{grid-column:1/-1}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:28px;background:none;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:1px;background:var(--ink)}
+input[type=range]::-moz-range-track{height:1px;background:var(--ink)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--sheet);border:1.5px solid var(--brass);margin-top:-9px;box-shadow:0 0 0 4px var(--sheet)}
+input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--sheet);border:1.5px solid var(--brass)}
+.path{width:124px;height:124px}
+.path circle,.path line{fill:none;stroke:var(--line2)}
+.path .day{fill:none;stroke:var(--brass);stroke-width:1.3}
+.path .plot{fill:var(--stone);stroke:var(--ink2);stroke-width:.6}
+.path text{font:500 8px var(--mono);fill:var(--dim);text-anchor:middle}
+.path .now{fill:var(--brass);stroke:var(--sheet);stroke-width:1.5}
+.sunread{font:400 11px/1.6 var(--mono);color:var(--ink2);margin-top:2px}
+/* finishes */
+.fins{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.fin{text-align:left;border:1px solid var(--line2);padding:5px 5px 7px;background:var(--paper);transition:border-color var(--fall)}
+.fin:hover{border-color:var(--ink)}
+.fin[aria-pressed=true]{border-color:var(--brass);box-shadow:0 0 0 1px var(--brass)}
+.fin u{display:block;height:44px;background-size:150px;background-position:center;margin-bottom:6px}
+.fin b{display:block;font:500 11.5px/1.25 var(--sans)}
+.picked{font:400 11px/1.5 var(--mono);color:var(--ink2);margin-bottom:10px;min-height:17px}
+.picked b{color:var(--brass);font-weight:500}
+/* render job */
+.spec{border:1px solid var(--line2);margin-top:16px}
+.spec div{display:flex;justify-content:space-between;gap:12px;padding:8px 12px;border-bottom:1px solid var(--line);font-size:12.5px}
+.spec div:last-child{border-bottom:0}
+.spec span{color:var(--dim)}.spec b{font-weight:500;text-align:right}
+.job{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.job span{padding-top:8px;border-top:2px solid var(--line);font:500 10.5px/1.3 var(--mono);letter-spacing:.06em;color:var(--dim);transition:border-color .3s,color .3s}
+.job span.on{border-color:var(--brass);color:var(--ink)}
+.jobmsg{margin-top:10px;min-height:36px;font-size:12.5px;color:var(--ink2)}
+.jobmsg.err{color:#8a3a22}
+.studies{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.studies figure{position:relative}
+.studies img{aspect-ratio:4/3;object-fit:cover;width:100%;cursor:zoom-in}
+.studies figcaption{font:400 10px/1.4 var(--mono);color:var(--dim);margin-top:5px}
+.changes{margin-top:14px;display:none}
+.changes.on{display:block}
+.changes div{display:grid;grid-template-columns:86px 1fr;gap:10px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.changes div span{font:500 10.5px/1.7 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--dim)}
+.changes s{color:var(--dim)}
+.hook{margin-top:16px;border:1px dashed var(--line2);padding:12px 14px;font-size:12.5px;color:var(--ink2)}
+.hook b{display:block;font:500 10.5px/1.4 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--brass);margin-bottom:4px}
+/* water-tightness sheet */
+.wlist{margin-top:16px;border-top:1px solid var(--line2)}
+.wrow{display:grid;grid-template-columns:30px 1fr 14px;gap:10px;align-items:center;width:100%;text-align:left;padding:11px 0;border-bottom:1px solid var(--line);min-height:56px;transition:background var(--fall)}
+.wrow:hover{background:var(--brassbg)}
+.wrow em{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--brass);font:600 11px/21px var(--sans);font-style:normal;text-align:center}
+.wrow b{display:block;font:600 13.5px/1.25 var(--sans)}
+.wrow span{display:block;font-size:12px;line-height:1.35;color:var(--ink2);margin-top:2px}
+.wrow i{font:400 13px/1 var(--mono);font-style:normal;color:var(--dim)}
+.wdet{display:none}
+.wdet.on{display:block;animation:pane var(--rise) var(--ease)}
+.wback{font:500 11px/1 var(--mono);letter-spacing:.06em;color:var(--ink2);padding:8px 0;border-bottom:1px solid var(--line2)}
+.wdet h3{font:500 27px/1.05 var(--serif);margin:12px 0 4px}
+.wdet .sec{width:100%;height:auto;margin:10px 0 2px;border:1px solid var(--line2);background:var(--paper)}
+.sec text{font:500 8.8px var(--mono);fill:var(--ink)}
+.sec .cap{font-size:7px;fill:var(--dim);letter-spacing:.12em}
+.sec .ld{stroke:var(--brass);stroke-width:.7;fill:none}
+.sec .ol{stroke:var(--ink);stroke-width:.8;fill:none}
+.wdet h4{font:500 10.5px/1.2 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:16px 0 7px}
+.wdet p,.wdet li{font-size:13px;line-height:1.5;color:var(--ink2)}
+.wdet ol{list-style:none;counter-reset:w}
+.wdet ol li{counter-increment:w;position:relative;padding:5px 0 5px 26px;border-bottom:1px solid var(--line)}
+.wdet ol li::before{content:counter(w);position:absolute;left:0;top:6px;width:17px;height:17px;border:1px solid var(--line2);border-radius:50%;font:500 9.5px/15px var(--mono);text-align:center;color:var(--ink)}
+.wdet ul{list-style:none}
+.wdet ul li{padding:5px 0 5px 14px;position:relative;border-bottom:1px solid var(--line)}
+.wdet ul li::before{content:"";position:absolute;left:0;top:13px;width:6px;height:1px;background:var(--brass)}
+.wdet ul li b{color:var(--ink);font-weight:600}
+.wsrc{font:400 10px/1.5 var(--mono);color:var(--dim);margin-top:10px}
+.honest{flex:none;padding:10px 26px 12px;border-top:1px solid var(--line2);font:400 11px/1.45 var(--sans);color:var(--dim);background:var(--sheet)}
+.honest b{font-weight:600;color:var(--ink2)}
+
+/* ---------- below the sheet ---------- */
+.memory{padding:84px 40px 92px;border-top:1px solid var(--line2);background:var(--sheet)}
+.memory .head{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,4fr);gap:40px;align-items:end;max-width:1360px;margin:0 auto 44px}
+.memory h2{font:500 clamp(40px,5.4vw,84px)/.96 var(--serif);letter-spacing:-.015em;margin-top:14px}
+.memory .head p{color:var(--ink2);font-size:15px;max-width:44ch}
+.flow{display:grid;grid-template-columns:minmax(0,220px) 90px minmax(0,1fr);max-width:1360px;margin:0 auto;align-items:stretch}
+.refs{display:grid;gap:14px;align-content:space-between}
+.refs figure{position:relative}
+.refs img{width:100%;aspect-ratio:5/4;object-fit:cover}
+.refs figcaption{position:absolute;left:0;bottom:0;background:var(--sheet);padding:5px 9px 3px 0;font:500 10px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.wires{width:100%;height:100%}
+.wires path{fill:none;stroke:var(--brass);stroke-width:1;stroke-dasharray:3 3;vector-effect:non-scaling-stroke}
+.out{position:relative}
+.out>img{width:100%;height:100%;min-height:340px;object-fit:cover}
+.out .inset{position:absolute;right:-1px;bottom:-1px;width:min(38%,300px);border:8px solid var(--sheet);border-right:0;border-bottom:0}
+.out .lbl{position:absolute;left:0;top:0;background:var(--sheet);padding:0 12px 8px 0}
+.memory .truth{max-width:1360px;margin:20px auto 0;display:grid;grid-template-columns:minmax(0,220px) 90px minmax(0,1fr)}
+.memory .truth span{grid-column:3}
+.link{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line2);background:var(--paper)}
+.link div{padding:40px;border-right:1px solid var(--line)}
+.link div:last-child{border-right:0}
+.link h3{font:500 28px/1.05 var(--serif);margin:12px 0 10px}
+.link p{color:var(--ink2);max-width:40ch}
+footer{display:flex;flex-wrap:wrap;gap:10px 30px;justify-content:space-between;align-items:center;padding:22px 40px 26px;border-top:1px solid var(--line2);font:400 11px/1.5 var(--mono);color:var(--dim);background:var(--sheet)}
+footer a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--brass);padding-bottom:1px}
+
+/* ---------- presentation ---------- */
+.deck{position:fixed;inset:0;z-index:40;background:#171513;color:#f2ecdf;display:none}
+.deck.on{display:block}
+.deck .track{display:flex;height:100%;transition:transform .7s cubic-bezier(.7,0,.2,1)}
+.slide{flex:0 0 100%;height:100%;position:relative;padding:8vh 7vw 12vh;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+.slide .k{color:rgba(242,236,223,.6)}
+.slide h2{font:500 clamp(34px,5vw,78px)/.98 var(--serif);letter-spacing:-.012em;margin:14px 0 18px;max-width:16ch}
+.slide p{color:rgba(242,236,223,.75);max-width:52ch;font-size:15px}
+.slide.cover{padding:0;justify-content:flex-end}
+.slide.cover>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.slide.cover .txt{position:relative;padding:22vh 7vw 12vh;background:linear-gradient(transparent,rgba(15,13,11,.86))}
+.slide.cover h2{max-width:none;font-size:clamp(44px,7.4vw,118px)}
+.tri{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:8px}
+.tri figure img{width:100%;aspect-ratio:16/10;object-fit:cover;background:#2a2622}
+.tri figcaption{margin-top:9px;font:400 11px/1.5 var(--mono);color:rgba(242,236,223,.7)}
+.tri figcaption b{display:block;font:500 20px/1.2 var(--serif);color:#f2ecdf}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6vw;align-items:start}
+.cols table{width:100%;border-collapse:collapse}
+.cols td{padding:8px 0;border-bottom:1px solid rgba(242,236,223,.16);font-size:14px}
+.cols td:last-child{text-align:right;font:400 12px/1.7 var(--mono);color:rgba(242,236,223,.7)}
+.wtab{width:100%;border-collapse:collapse;max-width:1240px}
+.wtab th{text-align:left;font:500 10px/1.3 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:rgba(242,236,223,.55);padding:0 14px 8px 0;border-bottom:1px solid rgba(242,236,223,.3)}
+.wtab td{vertical-align:top;padding:9px 14px 9px 0;border-bottom:1px solid rgba(242,236,223,.14);font-size:12.5px;line-height:1.42;color:rgba(242,236,223,.8)}
+.wtab td:first-child{font:500 18px/1.15 var(--serif);color:#f2ecdf;white-space:nowrap}
+.slide.water{justify-content:flex-start;padding-top:7vh;overflow-y:auto}.slide.water h2{font-size:clamp(28px,3.4vw,52px);max-width:none;margin:10px 0 14px}
+.vers{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px;max-width:1200px}
+.vers figure img{width:100%;aspect-ratio:16/9;object-fit:cover}
+.vers figcaption{margin-top:10px;font:400 11px/1.6 var(--mono);color:rgba(242,236,223,.7)}
+.vers figcaption b{display:block;font:500 22px/1.2 var(--serif);color:#f2ecdf}
+.vers figcaption em{font-style:normal;color:var(--brass2)}
+.deck nav{position:absolute;left:7vw;right:7vw;bottom:4.4vh;display:flex;align-items:center;gap:16px;font:400 11px/1 var(--mono);color:rgba(242,236,223,.7)}
+.deck nav button{min-width:44px;min-height:44px;border:1px solid rgba(242,236,223,.35);color:#f2ecdf;font:400 16px/1 var(--mono)}
+.deck nav button:hover{background:#f2ecdf;color:#171513}
+.deck nav .x{margin-left:auto;padding:0 14px;font:500 12px/1 var(--sans)}
+.deck nav i{font-style:normal;flex:1;height:1px;background:rgba(242,236,223,.2);position:relative}
+.deck nav i u{position:absolute;left:0;top:-1px;height:3px;background:var(--brass2);transition:width .5s}
+.zoom{position:fixed;inset:0;z-index:50;background:rgba(20,18,16,.94);display:none;place-items:center;cursor:zoom-out;padding:3vw}
+.zoom.on{display:grid}.zoom img{max-height:92vh;width:auto}
+
+/* ---------- phone ---------- */
+@media (max-width:880px){
+  :root{--bar:48px}
+  .bar{padding:0 14px;gap:10px}.bar .proj,.bar .meta{display:none}.bar .name{font-size:19px}.bar .reset{margin-left:auto;padding:14px 0}
+  .stage{display:block;height:auto;min-height:0}
+  .vp{position:sticky;top:0;height:44svh;min-height:300px;z-index:3;border-bottom:1px solid var(--line2)}
+  .vp::before{inset:8px}
+  .vtitle{left:18px;top:16px}.vtitle h1{font-size:25px;margin:5px 0 0}.vtitle p,.stamp span{display:none}
+  .stamp{display:none}.dha{display:none}.vp.built .vtitle h1{display:none}
+  .empty{right:18px;bottom:auto;top:16px}.empty div{max-width:130px;font-size:10.5px;line-height:1.35}.empty b{font-size:15px}
+  .vsun{left:18px;bottom:16px;gap:9px}.compass{width:40px;height:40px}.vsun b{font-size:16px}.vsun span{font-size:9.5px;line-height:1.4}
+  .rail{right:14px;bottom:14px;gap:6px;max-width:55%}.vcard{width:84px}.vcard .t{padding:4px 5px}.vcard .t b{font-size:10px}.vcard .t span{display:none}.vcard.ok::after{font-size:7px;padding:3px 4px}
+  .lab.room i{display:none}.lab.room{padding:2px 5px}
+  .seltag div{left:14px;top:-20px}.seltag u{width:22px}
+  .develop .cap{padding:30px 14px 12px;display:block}.develop .cap h3{font-size:20px}.develop .cap p{font-size:10px;line-height:1.4}
+  .develop .cap .acts{margin:8px 0 0;justify-content:flex-start}.develop .cap button{padding:8px 10px;min-height:44px}
+  .develop .sideA{left:14px;top:14px}.develop .sideB{right:14px;top:14px}
+  .panel{border-left:0}
+  .steps{position:sticky;top:44svh;background:var(--sheet);z-index:2}
+  .steps button{padding:9px 0 8px;min-height:48px}.steps button b{font-size:10.5px}.wtab td:first-child{white-space:normal;font-size:15px}.slide.water{padding-bottom:22vh}.wtab th:nth-child(3),.wtab td:nth-child(3){display:none}.steps button i{font-size:8.5px;margin-bottom:5px}
+  .panes{overflow:visible}
+  .pane{padding:22px 18px 26px}.pane h2{font-size:29px}
+  .honest{padding:10px 18px 14px}
+  .opt{grid-template-columns:96px 1fr}.opt img{width:96px;height:78px}
+  .seg button{min-height:44px}input[type=range]{height:44px}
+  .memory{padding:56px 18px 60px}.memory .head{grid-template-columns:1fr;gap:14px;margin-bottom:26px}
+  .flow{grid-template-columns:1fr}.refs{grid-template-columns:repeat(3,1fr);gap:8px}.refs figcaption{font-size:8px}.wires{display:none}.out{margin-top:10px}.out>img{min-height:0;aspect-ratio:4/3}
+  .memory .truth{display:block}
+  .link{grid-template-columns:1fr}.link div{padding:28px 18px;border-right:0;border-bottom:1px solid var(--line)}
+  footer{padding:20px 18px 30px}
+  .deck .track{display:block;overflow-y:auto;transform:none!important;scroll-snap-type:y proximity}
+  .slide{height:auto;min-height:100svh;padding:9vh 22px 13vh;scroll-snap-align:start}
+  .slide.cover .txt{padding:30vh 22px 13vh}
+  .tri,.cols{grid-template-columns:1fr}.deck nav{left:22px;right:22px;bottom:14px}.deck nav .pv,.deck nav .nx,.deck nav i{display:none}.deck nav .x{background:#171513}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<header class="bar">
+  <img class="logo" src="photos/AAA-Logo.jpg" alt="Ali Arshad Associates">
+  <span class="rule"></span>
+  <span class="name">Design Studio</span>
+  <span class="proj">The Courtyard Residence · Karachi</span>
+  <span class="meta">Concept prototype for Ali Arshad Associates · 17 Nov 2026</span>
+  <button class="reset" id="reset" type="button">Start over</button>
+</header>
+
+<main class="stage">
+  <section class="vp" id="vp" aria-label="Model">
+    <canvas id="gl" tabindex="0" aria-label="Three-dimensional model of the residence. Drag to orbit."></canvas>
+    <div id="labs"></div>
+    <div class="empty"><div id="emptyMsg"><b>Setting up the model…</b>A few seconds on first load.</div></div>
+    <div class="vtitle"><div class="k" id="sheetNo">Sheet A-01 · Brief</div><h1>The Courtyard<br>Residence</h1><p id="vsub">500 sq yd · Karachi 24.86°N 67.00°E · street front faces south-west</p></div>
+    <div class="stamp"><b>Concept · not for construction</b><br><span>Do not scale from this screen</span></div>
+    <div class="vsun"><svg class="compass" viewBox="0 0 58 58" aria-hidden="true"><circle cx="29" cy="29" r="27.5"/><g class="nd" id="needle"><path d="M29 6 L33 29 L29 26 L25 29 Z"/><text x="29" y="50">N</text></g></svg><div><b id="sunBig">4:36 pm · 17 Nov</b><span id="sunSmall"></span></div></div>
+    <div class="seltag" id="seltag"><i></i><u></u><div><b></b><span></span></div></div>
+    <div class="dha" id="dha"></div>
+    <div class="rail" id="rail"></div>
+    <div class="develop" id="develop">
+      <div class="clip" id="devClip"><div class="pic"><img id="devImg" alt=""></div></div>
+      <span class="sideA">Model</span><span class="sideB">Render</span>
+      <div class="bar2" id="devBar"><div class="knob" id="devKnob" role="slider" aria-label="Compare model and render" tabindex="0"></div></div>
+      <div class="cap"><div><div class="k" id="devK"></div><h3 id="devH"></h3><p id="devP"></p></div><div class="acts" id="devActs"></div></div>
+    </div>
+    <div class="nogl"><img src="renders/v2/contemporary-limestone-golden.jpg" alt=""><p class="truth"><b>The live 3D model needs WebGL,</b> which this browser has switched off. The prepared renders and the rest of the flow still work.</p></div>
+  </section>
+
+  <aside class="panel" aria-label="Design from brief">
+    <nav class="steps" id="steps">
+      <button type="button" class="on"><i>A-01</i><b>Brief</b></button>
+      <button type="button" aria-disabled="true"><i>A-02</i><b>Options</b></button>
+      <button type="button" aria-disabled="true"><i>A-03</i><b>Model</b></button>
+      <button type="button" aria-disabled="true"><i>A-04</i><b>Render</b></button>
+      <button type="button" aria-disabled="true"><i>A-05</i><b>Revise</b></button>
+      <button type="button" aria-disabled="true"><i>A-06</i><b>Present</b></button>
+      <button type="button" aria-disabled="true"><i>A-07</i><b>Water</b></button>
+    </nav>
+    <div class="stephint" id="stepHint" role="status"></div>
+    <div class="panes" id="panes">
+      <section class="pane on">
+        <div class="k">Design from brief</div>
+        <h2>Start with what the client said.</h2>
+        <p>Type or paste the brief as it arrived. The studio turns it into a room schedule and site rules.</p>
+        <textarea id="brief" spellcheck="false" aria-label="Client brief">A family of five on a 500 square yard plot in Karachi. They want a central courtyard, a double-height living room, an infinity pool, plenty of daylight and privacy from the street.</textarea>
+        <button class="go" id="readBrief" type="button"><span>Read the brief</span><span>→</span></button>
+        <div class="read" id="read">
+          <div class="grp" style="margin-top:14px"><div class="k"><span>What was understood</span><span id="undCount"></span></div><div class="und on" id="undBrief" style="margin-top:0"></div></div>
+          <div class="grp"><div class="k"><span>Room schedule</span><span id="readTotal"></span></div><table id="readRooms"></table></div>
+          <div class="grp"><div class="k">Site and privacy rules</div><ul id="readRules"></ul></div>
+          <p class="truth" style="margin-top:12px">Read by keyword rules in this prototype. The studio build would use a language model and AAA's own area standards.</p>
+          <button class="go" data-next type="button"><span>See three options</span><span>→</span></button>
+        </div>
+      </section>
+
+      <section class="pane">
+        <div class="k">Concept options</div>
+        <h2>One plan, three characters.</h2>
+        <p>Same courtyard plan and room schedule. Choose one and it is built on the plot.</p>
+        <div class="opts" id="opts"></div>
+        <button class="go" data-next type="button" id="toModel" disabled><span>Explore the model</span><span>→</span></button>
+      </section>
+
+      <section class="pane">
+        <div class="k">Live model</div>
+        <h2>Walk round it. Move the sun.</h2>
+        <div class="grp"><div class="k">View</div><div class="seg" id="cams"><button data-c="street" type="button">Street</button><button data-c="court" type="button">Courtyard</button><button data-c="aerial" type="button">Aerial</button><button data-c="plan" type="button">Plan</button></div></div>
+        <div class="grp"><div class="k">Floors</div><div class="seg" id="floors"><button data-f="all" type="button" aria-pressed="true">Whole</button><button data-f="ground" type="button">Ground</button><button data-f="first" type="button">First</button><button data-f="exploded" type="button">Exploded</button></div></div>
+        <div class="grp"><div class="k"><span>Sun study</span><span>Karachi · computed live</span></div>
+          <div class="sun"><div>
+            <div class="sl"><label for="time">Time</label><output id="timeLbl"></output><input id="time" type="range" min="5.5" max="19.5" step="0.1" value="16.6"></div>
+            <div class="sl"><label for="day">Date</label><output id="dayLbl"></output><input id="day" type="range" min="1" max="365" step="1" value="321"></div>
+            <div class="sunread" id="sunread"></div></div>
+            <svg class="path" id="path" viewBox="-62 -62 124 124" aria-label="Sun path diagram"></svg></div>
+        </div>
+        <div class="grp"><div class="k"><span>Finish F-01 · facade walls</span><span>click a wall</span></div><div class="picked" id="picked">Click any wall in the model, or choose a finish here.</div><div class="fins" id="fins"></div></div>
+        <button class="go" data-next type="button"><span>Visualise this</span><span>→</span></button>
+      </section>
+
+      <section class="pane">
+        <div class="k">Visualisation</div>
+        <h2>Render exactly what is on screen.</h2>
+        <p>The render takes the finish and the sun from the model, and lands beside it as a linked version.</p>
+        <div class="spec" id="spec"></div>
+        <button class="go" id="gen" type="button"><span>Generate render</span><span>→</span></button>
+        <div class="job" id="job"><span>Queued</span><span>Rendering</span><span>Linked</span></div>
+        <div class="jobmsg" id="jobmsg"></div>
+        <div class="grp"><div class="k"><span>Interior studies</span><span>earlier scheme</span></div>
+          <div class="studies"><figure><img src="renders/living.jpg" alt="Double-height living room with a timber stair" loading="lazy"><figcaption>Living room</figcaption></figure><figure><img src="renders/court.jpg" alt="Courtyard with a tree" loading="lazy"><figcaption>Courtyard</figcaption></figure><figure><img src="renders/learned-interior.jpg" alt="Classical stair hall in the AAA manner" loading="lazy"><figcaption>AAA manner hall</figcaption></figure></div>
+          <p class="truth" style="margin-top:8px">Generated studies from an earlier pass of this scheme, kept for mood only.</p></div>
+        <button class="go alt" data-next type="button"><span>Revise with a sentence</span><span>→</span></button>
+      </section>
+
+      <section class="pane">
+        <div class="k">Revision</div>
+        <h2>Say the change. See it built.</h2>
+        <p>Write it the way a client says it. Every phrase is answered: changed in the model, noted for later, or not understood yet.</p>
+        <textarea id="rev" style="min-height:84px" spellcheck="false" aria-label="Revision note">The boundary walls are too low, we need more privacy. Make the facade warmer and add more trees.</textarea>
+        <button class="go" id="applyRev" type="button"><span>Apply to the model</span><span>→</span></button>
+        <div class="und" id="changes"></div>
+        <button class="go" id="genRev" type="button" style="display:none"><span>Render the revision</span><span>→</span></button>
+        <div class="jobmsg" id="revmsg"></div>
+        <button class="go alt" data-next type="button"><span>Present to the client</span><span>→</span></button>
+      </section>
+
+      <section class="pane">
+        <div class="k">Client presentation</div>
+        <h2>The sheets, in order, for the client.</h2>
+        <p id="presSum"></p>
+        <button class="go" id="openDeck" type="button"><span>Open the presentation</span><span>→</span></button>
+        <div class="hook"><b>Proposed · not connected</b>One approval link per version, sent from here. The client's answer and comments are written back to the project record in AAA's existing CRM through its API.</div>
+        <p class="truth" style="margin-top:14px">Open any version on the model to pin a comment or mark it approved. Both appear in the presentation.</p>
+      </section>
+      <section class="pane">
+        <div id="wmain">
+          <div class="k">Monsoon specification · Karachi</div>
+          <h2>Where the rain gets in, and what stops it.</h2>
+          <p>Six places on this house where water enters after a Karachi downpour. Click a marker on the model, or a line here, for the build-up and the products.</p>
+          <div class="wlist" id="wlist"></div>
+          <p class="truth" style="margin-top:14px"><b>A layered specification, not a guarantee.</b> Workmanship, curing, the flood test and each product's own datasheet decide whether it holds; the site engineer has the last word. Every figure and product is from a published source, listed on its sheet. Slopes and DPC rules are from an Indian practice guide, because no Pakistani code clause was found.</p>
+          <button class="go alt" id="wDeck" type="button"><span>See it in the presentation</span><span>→</span></button>
+        </div>
+        <div class="wdet" id="wdet"></div>
+      </section>
+    </div>
+    <div class="honest"><b>Generated imagery is visualisation.</b> Validated CAD/BIM geometry remains the source of truth.</div>
+  </aside>
+</main>
+
+<section class="memory" id="memory">
+  <div class="head"><div><div class="k">Studio memory · <b>proposed</b></div><h2>It can learn the way AAA already designs.</h2></div>
+    <p>Three photographs of the practice's own villas went in. The same courtyard plan came out in that manner: white stucco, the tall arched entrance, quatrefoil panels, a shallow tiled roof.</p></div>
+  <div class="flow">
+    <div class="refs">
+      <figure><img src="photos/ig-villa-arch.jpg" alt="White villa by AAA with a tall arched glazed entrance" loading="lazy"><figcaption>Arched entrance</figcaption></figure>
+      <figure><img src="photos/ig-villa-rain.jpg" alt="White villa by AAA with quatrefoil wall panels and a tiled roof" loading="lazy"><figcaption>Quatrefoil panels</figcaption></figure>
+      <figure><img src="photos/ig-stair.jpg" alt="Curved marble stair by AAA with a wrought-iron balustrade" loading="lazy"><figcaption>Wrought-iron stair</figcaption></figure>
+    </div>
+    <svg class="wires" viewBox="0 0 90 300" preserveAspectRatio="none" aria-hidden="true"><path d="M0 44 C50 44 40 150 90 150"/><path d="M0 150 L90 150"/><path d="M0 256 C50 256 40 150 90 150"/></svg>
+    <div class="out"><img src="renders/learned-villa.jpg" alt="The Courtyard Residence redrawn in the AAA manner" loading="lazy"><div class="lbl k">New design · AAA manner</div><img class="inset" src="renders/learned-interior.jpg" alt="Stair hall in the AAA manner" loading="lazy"></div>
+  </div>
+  <p class="truth"><span><b>What is true today:</b> these two images were generated on 17 Nov 2026 with the three photographs above as reference (from @aliarshadassociates). A studio model trained on the whole AAA archive since 1989 is proposed, not built.</span></p>
+</section>
+<section class="link">
+  <div><div class="k">The CRM you already have</div><h3>One project record, two sides.</h3><p>The CRM keeps the client, the plot and the paperwork. Design Studio would read the brief from it and write back every version, comment and approval. Future API integration; not connected in this prototype.</p></div>
+  <div><div class="k">What is live on this page</div><h3>The model and the sun.</h3><p>The 3D model, the finish change, the floor views and the solar position for Karachi are computed in your browser as you move them.</p></div>
+  <div><div class="k">What is prepared</div><h3>The renders.</h3><p>Each render was generated on 17 Nov 2026 from a screenshot of this same model, one per finish and lighting. A live build would queue them on demand.</p></div>
+</section>
+<footer><span>AAA Design Studio · concept prototype for Ali Arshad Associates, Karachi · 17 Nov 2026 · the frangipani is not to scale either</span><a href="https://driftedmarketing.com/?utm_source=aliarshadassociates&utm_medium=footer-credit" target="_blank" rel="noopener">Powered by Drifted Marketing</a></footer>
+
+<div class="deck" id="deck" role="dialog" aria-label="Client presentation"><div class="track" id="track"></div><nav><button class="pv" type="button" aria-label="Previous">←</button><button class="nx" type="button" aria-label="Next">→</button><span id="deckNo"></span><i><u id="deckBar"></u></i><button class="x" type="button">Close</button></nav></div>
+<div class="zoom" id="zoom"><img alt=""></div>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script type="module">
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const wait=ms=>new Promise(r=>setTimeout(r,reduce?Math.min(ms,60):ms));
+const TODAY='17 Nov 2026',MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const dayLabel=d=>{const dt=new Date(2026,0,d);return dt.getDate()+' '+MONTHS[dt.getMonth()]};
+const clockLabel=h=>{let hr=Math.floor(h),m=Math.round((h-hr)*60);if(m===60){hr++;m=0}return `${((hr+11)%12)+1}:${String(m).padStart(2,'0')} ${hr>=12?'pm':'am'}`};
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+const BUCKET={noon:'High sun',golden:'Late afternoon',dusk:'Dusk'};
+/* prepared renders: one per style, finish, lighting (and with the teak screen). Filled from renders/v2/. */
+const RENDERS=new Set(/*RENDERS*/["classical-plaster-dusk", "classical-plaster-golden", "contemporary-concrete-dusk", "contemporary-concrete-golden", "contemporary-limestone-dusk", "contemporary-limestone-dusk-screen", "contemporary-limestone-golden", "contemporary-limestone-golden-screen", "contemporary-marble-dusk", "contemporary-marble-golden", "contemporary-plaster-dusk", "contemporary-plaster-golden", "contemporary-teak-dusk", "contemporary-teak-dusk-screen", "contemporary-teak-golden", "contemporary-teak-golden-screen", "contemporary-travertine-dusk", "contemporary-travertine-dusk-screen", "contemporary-travertine-golden", "contemporary-travertine-golden-screen", "classical-limestone-golden", "classical-limestone-dusk", "classical-travertine-golden", "classical-travertine-dusk", "classical-concrete-golden", "classical-concrete-dusk", "classical-teak-golden", "classical-teak-dusk", "classical-marble-golden", "classical-marble-dusk", "classical-plaster-golden-wall", "classical-plaster-dusk-wall"]/*END*/);
+const OPTS={
+  stone:{name:'Stone',line:'Honed Jhimpir limestone, flat roofs, the upper floor carried out over the entrance.',style:'contemporary',mat:'limestone'},
+  earth:{name:'Earth',line:'The same volumes in vein-cut travertine. Warmer, quieter against the street.',style:'contemporary',mat:'travertine'},
+  aaa:{name:'AAA manner',line:'White stucco, an arched glazed entrance, quatrefoil panels and a shallow tiled roof.',style:'classical',mat:'plaster'},
+};
+const S={step:0,unlocked:0,opt:null,mat:'limestone',day:321,time:16.6,screen:false,versions:[],revNote:null,brief:null,P:{wall:null,pool:false,trees:false,third:false},want:{}};
+
+/* ---------- model (falls back to prepared images without WebGL) ---------- */
+let villa=null,V=null;
+try{V=await import('./villa.js');villa=V.createVilla($('#gl'),$('#labs'));villa.hide()}
+catch(e){console.warn('3D unavailable',e);document.documentElement.classList.add('no3d')}
+const MATERIALS=V?V.MATERIALS:{plaster:{name:'Lime plaster'},limestone:{name:'Jhimpir limestone'},travertine:{name:'Travertine'},concrete:{name:'Board-marked concrete'},teak:{name:'Teak cladding'},marble:{name:'White marble'}};
+const sunNow=()=>villa?villa.sun:{alt:12,az:240,bucket:'golden',day:1};
+
+/* ---------- steps ---------- */
+const SHEETS=['Brief','Options','Model','Render','Revise','Present','Water'];
+const stepOpen=j=>j===0||(j===1?S.unlocked>=1:!!S.opt);
+const lockSteps=()=>$$('#steps button').forEach((b,j)=>b.setAttribute('aria-disabled',!stepOpen(j)));
+let hintT=0;const stepHint=t=>{const h=$('#stepHint');h.textContent=t;h.classList.add('on');clearTimeout(hintT);hintT=setTimeout(()=>h.classList.remove('on'),3800)};
+function goStep(i){S.step=i;if(i<6)S.unlocked=Math.max(S.unlocked,i);
+  $$('#steps button').forEach((b,j)=>{b.classList.toggle('on',j===i);b.classList.toggle('done',j<i&&j<=S.unlocked)});lockSteps();
+  if(villa&&S.opt){if(i===6){if(dev.classList.contains('on'))closeDev();villa.setFloors('all');setFloorBtn('all');villa.select(null);villa.setRain(true);villa.goCam('aerial');setCamBtn('aerial');waterList()}else if(villa.rain){villa.setRain(false);villa.markActive(null)}}
+  if(i===6&&!villa)waterList();
+  $$('.pane').forEach((p,j)=>p.classList.toggle('on',j===i));$('#panes').scrollTop=0;
+  $('#sheetNo').textContent=`Sheet A-0${i+1} · ${SHEETS[i]}`;
+  if(i===3)spec();if(i===5)presSum();
+  if(villa){villa.showSunPath(i===2);if(i!==2&&villa.selection){villa.select(null);tag(null)}}
+  if(innerWidth<=880&&i>0){const y=$('.panel').getBoundingClientRect().top+scrollY-$('.vp').offsetHeight;if(scrollY>y)scrollTo({top:y})}
+}
+$$('#steps button').forEach((b,i)=>b.addEventListener('click',()=>{if(!stepOpen(i)){stepHint(S.unlocked<1?'Read the brief first, then choose an option. The other sheets open once the house is built.':'Choose one of the three options first. The other sheets open once the house is built.');return}goStep(i)}));
+$$('[data-next]').forEach(b=>b.addEventListener('click',()=>goStep(S.step+1)));
+const dev=$('#develop');
+$('#reset').addEventListener('click',()=>location.reload());
+
+/* ---------- 1 · brief ---------- */
+function interpret(t){
+  const s=t.toLowerCase(),o={rooms:[],rules:[]};
+  const yd=+((s.match(/(\d{3,4})\s*-?\s*(?:square|sq\.?)\s*-?\s*(?:yards?|yd)/)||[])[1]||500);
+  const words={two:2,three:3,four:4,five:5,six:6,seven:7,eight:8},fm=s.match(/family of (\w+)/),fam=fm?(words[fm[1]]||+fm[1]||5):5,beds=Math.min(6,Math.max(2,fam-1));
+  const dbl=/double[- ]height/.test(s),court=/courtyard/.test(s),light=/light|daylight|sun/.test(s),priv=/privacy|private/.test(s);
+  o.rooms.push(['Living room'+(dbl?', double height':''),dbl?544:420],['Dining and kitchen',616],['Family lounge',264],['Master bedroom and bath',420]);
+  for(let i=2;i<=beds;i++)o.rooms.push([`Bedroom ${i} and bath`,300]);
+  o.rooms.push(['Guest suite',224],['Staff room and laundry',196]);
+  if(court)o.rooms.push(['Central courtyard, open to sky',384,1]);
+  o.total=o.rooms.filter(r=>!r[2]).reduce((a,r)=>a+r[1],0);
+  o.rules.push(`Plot ${fmt(yd)} sq yd = ${fmt(yd*9)} sq ft, taken as 50 × 90 ft`);
+  if(priv)o.rules.push('Street face kept mostly closed; glazing turns to the courtyard','Family bedrooms on the first floor, guest suite by the entrance');
+  if(light)o.rules.push('Rooms lit from the courtyard and one tall stair window');
+  o.rules.push('Karachi sun at 24.86°N: the south-west street front needs shade after 3 pm','Two storeys; sea breeze drawn through the courtyard');
+  o.fam=fam;o.beds=beds;return o;
+}
+$('#readBrief').addEventListener('click',()=>{
+  if(!$('#brief').value.trim()){$('#brief').placeholder='Paste or type the client\u2019s brief here first.';$('#brief').focus();return}
+  const I=S.brief=interpret($('#brief').value),U=understand($('#brief').value);S.want=U;
+  U.forEach(it=>{if(it.room)I.rooms.push([it.room,0]);if(it.set&&it.set.pool)I.rooms.push(['Swimming pool, front garden',0,1]);if(it.beds){I.rooms=I.rooms.filter(r=>!/^Bedroom \d/.test(r[0]));const k=I.rooms.findIndex(r=>/Master/.test(r[0]));for(let b=it.beds;b>=2;b--)I.rooms.splice(k+1,0,[`Bedroom ${b} and bath`,300]);I.beds=it.beds;I.total=I.rooms.filter(r=>!r[2]).reduce((a,r)=>a+r[1],0)}});
+  $('#undBrief').innerHTML=undHTML(U.map(it=>({...it,detail:it.kind==='m'?(it.detail?it.detail.replace('changed in the model','will be built'):'')||'built into the model with the option you choose':it.detail})));$('#undCount').textContent=`${U.filter(i=>i.kind!=='u').length} read · ${U.filter(i=>i.kind==='u').length} not understood`;
+  $('#readRooms').innerHTML=I.rooms.map((r,i)=>`<tr style="animation-delay:${i*55}ms"><td>${r[0]}</td><td>${r[1]?fmt(r[1])+' sq ft':'to size'}</td></tr>`).join('');
+  $('#readTotal').textContent=`${fmt(I.total)} sq ft enclosed`;
+  $('#readRules').innerHTML=I.rules.map(r=>`<li>${r}</li>`).join('');
+  $('#read').classList.add('on');S.unlocked=Math.max(S.unlocked,1);lockSteps();
+  $('#vsub').textContent=`Family of ${I.fam} · ${I.beds} bedrooms · 500 sq yd · Karachi 24.86°N 67.00°E`;
+  setTimeout(()=>$('#read').scrollIntoView({behavior:reduce?'auto':'smooth',block:'nearest'}),60);
+});
+
+/* ---------- the reader: every phrase is answered ---------- */
+const FT=.3048,fi=m=>{let t=Math.round(m/FT*12),f=Math.floor(t/12),i=t%12;return `${f}'-${i}"`};
+const NUM={one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,ten:10};
+const TONE=['marble','plaster','limestone','travertine','teak'];
+const MATWORD=[[/lime\s?stone|jhimpir/,'limestone'],[/travertine/,'travertine'],[/concrete|brutal/,'concrete'],[/teak|timber|wood/,'teak'],[/marble/,'marble'],[/plaster|stucco/,'plaster']];
+/* rule: [key, pattern, handler(match, clause) -> {kind:'m'|'s'|'n', label, detail, set?}]  m = model, s = schedule, n = noted */
+const RULES=[
+ ['family',/family of (\w+)|(\w+) (people|persons|members)/,m=>({kind:'s',label:`Family of ${NUM[m[1]||m[2]]||m[1]||m[2]}`,detail:'bedrooms counted in the room schedule'})],
+ ['plot',/(\d{3,4})\s*-?\s*(square|sq\.?)\s*-?\s*(yards?|yd)|(\d)\s*kanal/,m=>({kind:'s',label:m[1]?`${m[1]} sq yd plot`:`${m[4]} kanal plot`,detail:+(m[1]||500)===500?'matches the 50 × 90 ft plot in the model':'noted; the model stays on the 500 sq yd plot'})],
+ ['pool',/(no|without|remove|delete)[\w\s]{0,12}pool|(infinity|swimming|lap|plunge)?[- ]?pool/,m=>m[1]?{kind:'m',label:'Pool removed',detail:'taken out of the model',set:{pool:false}}:{kind:'m',label:`${m[2]?m[2][0].toUpperCase()+m[2].slice(1)+' pool':'Swimming pool'} in the front garden`,detail:'placed in the model; DHA allows a pool from 500 sq yd',set:{pool:true}}],
+ ['wall',/(\d+(?:\.\d+)?)\s*(?:ft|feet|foot|'|′)[\w\s-]{0,14}walls?|walls?[\w\s]{0,24}?(\d+(?:\.\d+)?)\s*(?:ft|feet|foot|'|′)|(?:boundary|compound|street|front)?\s*walls?[\w\s]{0,18}(too low|low|short|higher|taller|raise|raised|high)|(?:raise|higher|taller)[\w\s]{0,14}walls?/,m=>{const ft=Math.min(14,Math.max(4,+(m[1]||m[2]||9)));return {kind:'m',label:`Boundary wall raised to ${fi(ft*FT)}`,detail:ft>10?'changed in the model; over the DHA 10\'-0" limit, flagged':ft<8?'changed in the model; under the DHA 8\'-0" minimum, flagged':'changed in the model; inside the DHA 8\'-0" to 10\'-0" band',set:{wall:ft*FT}}}],
+ ['privacy',/privacy|private|overlook|exposed|screen|seclu/,()=>({kind:'m',label:'More privacy from the street',detail:'',privacy:true})],
+ ['trees',/trees?|green(er|ery)?|landscap|planting|plants|garden|lawn/,()=>({kind:'m',label:'More trees along the garden edges',detail:'four trees added in the model',set:{trees:true}})],
+ ['third',/third floor|second floor|another floor|extra floor|add a floor|one more floor|three (storey|stories|storeys|floors)|roof (terrace|room|pavilion|top room)|penthouse|rooftop/,()=>({kind:'m',label:'A third floor on the roof',detail:'',third:true})],
+ ['style',/arch(es|ed)?\b|classical|traditional|aaa manner|colonial|modern|contemporary|minimal/,m=>({kind:'m',label:/modern|contemporary|minimal/.test(m[0])?'Contemporary manner':'Classical AAA manner, with arches',detail:'',style:/modern|contemporary|minimal/.test(m[0])?'contemporary':'classical'})],
+ ['mat',/lime\s?stone|jhimpir|travertine|concrete|brutal|teak|timber|wood|marble|plaster|stucco/,m=>{const k=MATWORD.find(x=>x[0].test(m[0]))[1];return {kind:'m',label:`Facade finish: ${MATERIALS[k].name}`,detail:'F-01 walls changed in the model',mat:k}}],
+ ['tone',/warm(er)?|cool(er)?|dark(er)?|light(er)? (facade|colou?r|stone|walls?)|whiter?|pal(e|er)|bright(er)? (facade|colou?r|walls?)/,m=>({kind:'m',label:/warm|dark/.test(m[0])?'Warmer facade':'Lighter, cooler facade',detail:'',tone:/warm|dark/.test(m[0])?1:-1})],
+ ['court',/courtyard|atrium|central court/,m=>({kind:'s',label:'Central courtyard, open to sky',detail:'in the plan and the room schedule'})],
+ ['dbl',/double[- ]height/,()=>({kind:'s',label:'Double-height living room',detail:'in the room schedule; stair hall is double height in the model'})],
+ ['light',/daylight|natural light|sunlight|bright|airy|more light|bigger windows|larger windows|more windows|fewer windows|smaller windows|less glass/,m=>/fewer|smaller|less/.test(m[0])?{kind:'n',label:'Fewer or smaller windows',detail:'noted, not modelled yet'}:{kind:'s',label:'Plenty of daylight',detail:'rooms lit from the courtyard; site rule added'}],
+ ['beds',/(\w+)[- ]bed(room)?s?\b/,m=>({kind:'s',label:`${NUM[m[1]]||m[1]} bedrooms`,detail:'room schedule updated; the model keeps four bedrooms',beds:+(NUM[m[1]]||m[1])||null})],
+ ['basement',/basement|cellar/,()=>({kind:'n',label:'Basement',detail:'added to the room schedule; not modelled yet. DHA allows one up to the ground-floor footprint',room:'Basement'})],
+ ['cars',/(\w+)[- ]car|garage|car ?porch|parking/,m=>({kind:'n',label:`Car porch${NUM[m[1]]||+m[1]?` for ${NUM[m[1]]||m[1]} cars`:''}`,detail:'added to the room schedule; not modelled yet. DHA minimum 10 × 14 ft',room:'Car porch'})],
+ ['balcony',/balcon(y|ies)|(?<!roof )terrace|veranda/,()=>({kind:'n',label:'Balcony or terrace',detail:'added to the room schedule; not modelled yet',room:'Balcony'})],
+ ['staff',/servant|staff quarter|maid|driver/,()=>({kind:'s',label:'Staff quarter',detail:'already in the room schedule as staff room and laundry'})],
+ ['lift',/lift|elevator/,()=>({kind:'n',label:'Passenger lift',detail:'added to the room schedule; not modelled yet',room:'Lift and lobby'})],
+ ['prayer',/prayer|namaz|mosque|musalla/,()=>({kind:'n',label:'Prayer room',detail:'added to the room schedule; not modelled yet',room:'Prayer room'})],
+ ['study',/study|home office|office|library/,()=>({kind:'n',label:'Study',detail:'added to the room schedule; not modelled yet',room:'Study'})],
+ ['gym',/gym|fitness/,()=>({kind:'n',label:'Gym',detail:'added to the room schedule; not modelled yet',room:'Gym'})],
+ ['cinema',/cinema|home theat(er|re)|media room/,()=>({kind:'n',label:'Media room',detail:'added to the room schedule; not modelled yet',room:'Media room'})],
+ ['guest',/guest/,()=>({kind:'s',label:'Guest suite',detail:'in the room schedule and the plan'})],
+ ['kitchen',/kitchen|dining|lounge|living/,()=>({kind:'s',label:'Living, dining and kitchen',detail:'in the room schedule and the plan'})],
+ ['city',/karachi|dha|clifton|defence/,()=>({kind:'s',label:'Karachi site',detail:'sun and DHA rules set for Karachi'})],
+];
+const FILLER=/^(the|a|an|and|we|they|i|he|she|it|is|are|was|to|of|on|in|for|with|want|wants|need|needs|would|like|please|make|add|also|some|more|very|really|too|our|their|my|house|home|villa|plot|have|has|that|this|there|be|should|must|can|you|so|just|give|us|them|me|facade|from|street)$/;
+function understand(text){
+  const items=[],seen=new Set();
+  text.split(/[.;\n!?]|,| and | but | also | plus | with /i).map(c=>c.trim()).filter(Boolean).forEach(c=>{
+    const lc=' '+c.toLowerCase()+' ';let hit=false;
+    RULES.forEach(([key,re,fn])=>{const m=lc.match(re);if(!m)return;if(key==='trees'&&/pool/.test(lc)&&!/tree|green|plant/.test(lc))return;if(key==='light'&&/facade|colou?r|wall/.test(lc)&&/bright|light/.test(m[0]))return;if(key==='kitchen'&&seen.has('dbl')&&/living/.test(m[0])){hit=true;return}
+      hit=true;if(seen.has(key))return;seen.add(key);const it=fn(m,lc);if(it){it.key=key;items.push(it)}});
+    if(!hit){const words=c.toLowerCase().split(/\s+/).filter(w=>w&&!FILLER.test(w.replace(/[^a-z]/g,'')));if(words.length)items.push({kind:'u',key:'u'+items.length,label:`“${c.length>70?c.slice(0,67)+'…':c}”`,detail:'not understood yet; kept on the list for the architect'})}});
+  return items;
+}
+/* turn understood items into changes on the model; returns the items with their final wording */
+function applyItems(items,animate){
+  const cl=()=>OPTS[S.opt]&&OPTS[S.opt].style==='classical',set={};
+  items.forEach(it=>{
+    if(it.set)Object.assign(set,it.set);
+    if(it.privacy){const cur=S.P.wall??set.wall;if(!(set.wall||S.P.wall)||(cur<8*FT))set.wall=Math.max(set.wall||0,9*FT);
+      if(!cl()){S.screen=true;it.detail=`boundary wall to ${fi(set.wall||S.P.wall)}, teak fin screen over the street windows`}else it.detail=`boundary wall to ${fi(set.wall||S.P.wall)}; the tall narrow openings already limit the view in`}
+    if(it.third){set.third=true;it.detail=cl()?'noted; the roof pavilion is not modelled in the AAA manner yet':'built in the model; DHA allows basement, ground and first only, so it is flagged';if(cl())it.kind='n'}
+    if(it.mat){S.mat=it.mat}
+    if(it.tone){const i=TONE.indexOf(S.mat),j=Math.max(0,Math.min(TONE.length-1,(i<0?2:i)+it.tone));if(TONE[j]!==S.mat){it.detail=`F-01 walls: ${MATERIALS[S.mat].name} → ${MATERIALS[TONE[j]].name}`;S.mat=TONE[j]}else it.detail=`already ${MATERIALS[S.mat].name}, the ${it.tone>0?'warmest':'lightest'} finish offered`}
+    if(it.style&&S.opt){const want=it.style==='classical'?'aaa':(S.opt==='aaa'?'stone':S.opt);if(want!==S.opt){S.opt=want;if(want==='aaa')S.mat=it.mat||'plaster';it.detail='the house is rebuilt in this manner';it.rebuild=true;$$('.opt').forEach(x=>x.setAttribute('aria-pressed',x.dataset.o===want))}else it.detail='already in this manner'}
+    else if(it.style)it.detail='the matching option is marked on the next sheet';
+  });
+  Object.assign(S.P,set);
+  if(villa&&S.opt){const st=OPTS[S.opt].style;if(items.some(i=>i.rebuild)){villa.setStyle(st);villa.show&&villa.show()}villa.setMaterial(S.mat);
+    villa.setParams(S.P,animate);if(st==='contemporary')villa.setLouvres(S.screen,animate&&S.screen&&!villa.louvres);}
+  if(typeof finButtons==='function'&&S.opt)finButtons();dha(true);setTimeout(()=>dha(true),animate?1400:0);return items;
+}
+const undHTML=items=>items.map((it,i)=>`<div class="${it.kind}" style="animation-delay:${i*70}ms"><i>${it.kind==='m'?'✓':it.kind==='s'?'✓':it.kind==='n'?'○':'?'}</i><p><b>${it.label}</b><span>${it.detail||(it.kind==='m'?'changed in the model':'')}</span></p></div>`).join('');
+
+/* ---------- live DHA check: measured from the model after every change ---------- */
+let dhaPrev={};
+function dha(flash){const el=$('#dha');if(!villa||!el)return;const m=villa.measure(),pct=m.ground/m.plot*100,min=el.classList.contains('min');
+  const rows=[
+   ['Covered area',`${pct.toFixed(0)}% <small>max 65%</small>`,pct<=65],
+   ['Front open space',`${fi(m.front)} <small>min 10'-0"</small>`,m.front>=3.048],
+   ['Rear open space',`${fi(m.rear)} <small>min 5'-0"</small>`,m.rear>=1.524],
+   ['Side open space',`${fi(m.side)} <small>min 5'-0"</small>`,m.side>=1.523],
+   ['Floors',`${m.storeys===3?'G + 2':'G + 1'} <small>max B+G+1</small>`,m.storeys<=2],
+   ['Height to roof top',`${fi(m.height)} <small>max 32'-0"</small>`,m.height<=9.754],
+   ['Boundary wall',`${fi(m.wall)} <small>8'-0" to 10'-0"</small>`,m.wall>=2.438-.02&&m.wall<=3.048+.02],
+   ['Swimming pool',m.pool?`yes <small>allowed from 500 sq yd</small>`:`none`,m.pool?true:null],
+   ['Stair riser',`${(m.riser/.0254).toFixed(1)}" <small>max 7"</small>`,m.riser<=.1779],
+   ['Main gate',`${fi(m.gate)} <small>max 15'-0"</small>`,m.gate<=4.572]];
+  const flags=rows.filter(r=>r[2]===false).length;
+  el.innerHTML=`<h4><span>DHA check · 401–700 sq yd</span><em>${flags?flags+' flag'+(flags>1?'s':''):'all pass'}</em></h4>`+rows.map(r=>`<div class="${r[2]===false?'flag':r[2]===null?'na':''}${flash&&dhaPrev[r[0]]!==undefined&&dhaPrev[r[0]]!==r[1]?' chg':''}"><span>${r[0]}</span><b>${r[1]}</b><i>${r[2]===false?'!':r[2]===null?'–':'✓'}</i></div>`).join('')+`<p>Measured live from the model against DHA Karachi building regulations 2020. Verify against the current issue before submission.</p>`;
+  el.classList.toggle('min',min);rows.forEach(r=>dhaPrev[r[0]]=r[1]);setTimeout(()=>$$('#dha .chg').forEach(d=>d.classList.remove('chg')),1600)}
+
+/* ---------- 2 · options ---------- */
+const sqft=m=>fmt(m*10.7639);
+$('#opts').innerHTML=Object.entries(OPTS).map(([k,o])=>`<button class="opt" type="button" data-o="${k}" aria-pressed="false"><img src="renders/v2/${o.style}-${o.mat}-golden.jpg" alt="${o.name} option, rendered from the model" loading="lazy"><div><div class="k">Option ${k==='stone'?'A':k==='earth'?'B':'C'}</div><b>${o.name}</b><span>${o.line}</span><i>${villa?sqft(villa.footprint.ground+villa.footprint.first):'4,200'} sq ft built, walls and stairs included · courtyard ${villa?sqft(48):'517'} sq ft</i></div></button>`).join('');
+let building=false;
+$$('.opt').forEach(b=>b.addEventListener('click',async()=>{
+  if(building)return;building=true;const k=b.dataset.o,o=OPTS[k];S.opt=k;S.mat=o.mat;S.screen=false;S.revNote=null;S.P={wall:null,pool:false,trees:false,third:false};if(villa)villa.setParams(S.P,false);
+  $$('.opt').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  if(villa){tag(null);villa.setStyle(o.style);villa.setMaterial(o.mat);villa.setLouvres(false);villa.hide();$('#vp').classList.add('built');
+    setFloorBtn('all');villa.goCam('aerial');await villa.assemble();
+    const wish=(S.want||[]).filter(it=>it.kind==='m'&&!it.style&&!it.mat&&!it.tone);if(wish.length){applyItems(wish.map(it=>({...it})),true);await wait(1500)}else dha(false);
+    await villa.goCam(S.P.wall&&S.P.wall>1.6?'aerial':'street');setCamBtn(S.P.wall&&S.P.wall>1.6?'aerial':'street')}
+  finButtons();$('#toModel').disabled=false;S.unlocked=Math.max(S.unlocked,2);lockSteps();
+  $('#changes').classList.remove('on');$('#genRev').style.display='none';building=false;
+}));
+
+/* ---------- 3 · model ---------- */
+const setCamBtn=k=>$$('#cams button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.c===k));
+const setFloorBtn=k=>$$('#floors button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.f===k));
+$$('#cams button').forEach(b=>b.addEventListener('click',()=>{if(!villa)return;setCamBtn(b.dataset.c);if(b.dataset.c==='plan'&&villa.floors==='all'){villa.setFloors('ground');setFloorBtn('ground')}villa.goCam(b.dataset.c)}));
+$$('#floors button').forEach(b=>b.addEventListener('click',()=>{if(!villa)return;setFloorBtn(b.dataset.f);villa.setFloors(b.dataset.f);tag(null);if(b.dataset.f!=='all'&&(villa.cam==='street'||villa.cam==='court')){villa.goCam('aerial');setCamBtn('aerial')}}));
+if(villa)$('#gl').addEventListener('pointerdown',()=>setCamBtn(''));
+function sunUI(){const s=sunNow();
+  $('#timeLbl').textContent=clockLabel(S.time);$('#dayLbl').textContent=dayLabel(S.day);
+  $('#sunBig').textContent=`${clockLabel(S.time)} · ${dayLabel(S.day)}`;
+  $('#sunSmall').textContent=s.alt>0?`Sun azimuth ${s.az.toFixed(1)}° · altitude ${s.alt.toFixed(1)}°`:`Sun ${Math.abs(s.alt).toFixed(1)}° below the horizon`;
+  $('#sunread').innerHTML=s.alt>0?`Azimuth ${s.az.toFixed(1)}° · altitude ${s.alt.toFixed(1)}°<br>Shadows cast for this minute`:`Sun below the horizon<br>Interior lights carry the model`;
+  $('#vp').classList.toggle('dusk',s.day<.5);pathDiagram();if(S.step===3)spec();
+}
+function pathDiagram(){if(!V)return;const R=52,pt=(az,alt)=>{const r=R*(1-alt/(Math.PI/2));return [r*Math.sin(az),-r*Math.cos(az)]};
+  let d='';for(let t=4.5;t<=20;t+=.25){const q=V.solar(S.day,t);if(q.alt>0){const [x,y]=pt(q.az,q.alt);d+=(d?'L':'M')+x.toFixed(1)+' '+y.toFixed(1)}}
+  const q=V.solar(S.day,S.time),[nx,ny]=pt(q.az,Math.max(q.alt,0)),ticks=[9,12,15].map(h=>{const a=V.solar(S.day,h);if(a.alt<=0)return'';const [x,y]=pt(a.az,a.alt);return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1.4" style="fill:var(--brass);stroke:none"/><text x="${x.toFixed(1)}" y="${(y-4).toFixed(1)}">${h>12?h-12:h}</text>`}).join('');
+  $('#path').innerHTML=`<circle r="${R}"/><circle r="${R*2/3}" stroke-dasharray="1 3"/><circle r="${R/3}" stroke-dasharray="1 3"/><line x1="-${R}" x2="${R}"/><line y1="-${R}" y2="${R}"/>
+   <rect class="plot" x="-4.5" y="-8" width="9" height="16" transform="rotate(${V.BEARING-180})"/><path class="day" d="${d}"/>${ticks}
+   <text y="-${R+3}">N</text><text y="${R+9}">S</text><text x="${R+6}" y="3">E</text><text x="-${R+6}" y="3">W</text>${q.alt>0?`<circle class="now" cx="${nx.toFixed(1)}" cy="${ny.toFixed(1)}" r="4"/>`:''}`}
+[['time','time'],['day','day']].forEach(([id,k])=>{const el=$('#'+id);el.addEventListener('input',()=>{S[k]=+el.value;if(villa)villa.setSun(S.day,S.time);sunUI()})});
+function finButtons(){
+  $('#fins').innerHTML=Object.entries(MATERIALS).map(([k,m])=>`<button class="fin" type="button" data-k="${k}" aria-pressed="${k===S.mat}"><u style="background-image:url(${V?V.finishSwatch(k):''})"></u><b>${m.name}</b></button>`).join('');
+  $$('.fin').forEach(b=>b.addEventListener('click',()=>{S.mat=b.dataset.k;if(villa)villa.setMaterial(S.mat);$$('.fin').forEach(x=>x.setAttribute('aria-pressed',x===b));
+    if(villa&&!villa.selection){const s={slot:'facade',vol:'Upper volume',face:'All elevations'};villa.select(s);}tag(villa?villa.selection:null)}));
+}
+let tagSel=null;
+function tag(s){tagSel=s;const el=$('#seltag');
+  if(!s){el.classList.remove('on');$('#picked').innerHTML='Click any wall in the model, or choose a finish here.';return}
+  const base=s.slot==='base';
+  el.querySelector('b').textContent=`${s.vol} · ${s.face||'All elevations'}`;
+  el.querySelector('span').textContent=base?'F-02 · rough grey ashlar · fixed in this prototype':`F-01 · ${MATERIALS[S.mat].name}`;
+  $('#picked').innerHTML=base?`<b>${s.vol}</b> selected. F-02 base course stays rough grey ashlar in this prototype.`:`<b>${s.vol}</b> selected. The finish applies to every F-01 wall.`;
+  el.classList.toggle('on',!!s.point);
+}
+if(villa){villa.onPick(s=>{tag(s);if(s&&S.unlocked>=2&&S.step!==2)goStep(2)});
+  villa.onFrame(()=>{if(tagSel&&tagSel.point){const p=villa.project(tagSel.point);$('#seltag').style.transform=`translate(${p.x.toFixed(1)}px,${p.y.toFixed(1)}px)`}
+    $('#needle').style.transform=`rotate(${villa.northScreenAngle().toFixed(1)}deg)`})}
+
+/* ---------- 4 · render ---------- */
+const wallUp=()=>S.P.wall!=null&&S.P.wall>=1.8;
+function renderKey(){const o=OPTS[S.opt]||OPTS.stone,b=sunNow().bucket,base=`${o.style}-${S.mat}`,sc=(S.screen&&o.style==='contemporary'?'-screen':'')+(wallUp()?'-wall':S.P.pool?'-pool':'')+(S.P.third&&o.style==='contemporary'?'-third':'');
+  for(const k of [b,'golden','dusk','noon']){if(RENDERS.has(`${base}-${k}${sc}`))return {file:`renders/v2/${base}-${k}${sc}.jpg`,bucket:k,exact:k===b}}return null}
+function spec(){const s=sunNow(),r=renderKey();
+  $('#spec').innerHTML=`<div><span>View</span><b>Street, eye level</b></div><div><span>Finish F-01</span><b>${MATERIALS[S.mat].name}${S.screen?' + teak screen':''}</b></div><div><span>Site</span><b>wall ${villa?fi(villa.measure().wall):''}${S.P.pool?' · pool':''}${S.P.trees?' · more trees':''}${S.P.third?' · third floor':''}</b></div><div><span>Sun</span><b>${clockLabel(S.time)} · ${dayLabel(S.day)}${s.alt>0?` · alt ${s.alt.toFixed(0)}°`:' · after sunset'}</b></div><div><span>Lighting preset</span><b>${r?BUCKET[r.bucket]+(r.exact?'':' (nearest prepared)'):'none prepared'}</b></div>`}
+const jobSet=n=>$$('#job span').forEach((s,i)=>s.classList.toggle('on',i<n));
+let genBusy=false;
+async function generate(msgEl,from){
+  if(genBusy||!S.opt)return;genBusy=true;const t0=performance.now();msgEl.classList.remove('err');jobSet(0);
+  const r=renderKey();
+  if(!r){msgEl.classList.add('err');msgEl.textContent=`Queued for the render service: no image is prepared yet for ${MATERIALS[S.mat].name}${S.screen?', the screen':''}${wallUp()?', the raised wall':''}${S.P.pool?', the pool':''}${S.P.third?', the third floor':''} together. The live model above already shows it exactly; connect the render service to produce this one.`;genBusy=false;return}
+  const dup=S.versions.find(v=>v.file===r.file&&v.day===S.day&&v.time===S.time);
+  if(dup){msgEl.textContent=`This exact state is already linked as ${dup.id}. Change the finish or the sun to make a new version.`;genBusy=false;return}
+  jobSet(1);msgEl.textContent='Queued · reading finish, sun and camera from the model';
+  if(villa){if(villa.floors!=='all'){villa.setFloors('all');setFloorBtn('all')}villa.select(null);tag(null);if(!villa.atCam('street')){msgEl.textContent='Queued · returning to the Street view the renders are prepared for';await villa.goCam('street')}setCamBtn('street')}
+  const img=new Image();img.src=r.file;try{await img.decode()}catch(e){msgEl.classList.add('err');msgEl.textContent='The prepared render did not load. Check the connection and try again.';jobSet(0);genBusy=false;return}
+  await wait(500);jobSet(2);msgEl.textContent='Rendering · prepared image for this finish and light';
+  const v={id:'V'+(S.versions.length+1),opt:S.opt,mat:S.mat,day:S.day,time:S.time,screen:S.screen,file:r.file,bucket:r.bucket,exact:r.exact,from:from||null,note:S.revNote,notes:[],approved:false,sun:{...sunNow()},P:{...S.P}};
+  await develop(v,true);
+  S.versions.push(v);rail();jobSet(3);
+  msgEl.innerHTML=`<b>${v.id} linked to the model</b> in ${((performance.now()-t0)/1000).toFixed(1)} s. Prepared visualisation, generated ${TODAY} from this model view; not rendered live.${r.exact?'':` Lighting shown: ${BUCKET[r.bucket].toLowerCase()}, the nearest prepared.`}`;
+  await flyToRail(v);S.unlocked=Math.max(S.unlocked,5);lockSteps();presSum();genBusy=false;
+}
+$('#gen').addEventListener('click',()=>{if(!S.opt)stepHint('Choose one of the three options first.');generate($('#jobmsg'))});
+const vName=v=>`${MATERIALS[v.mat].name}${v.screen?' + screen':''}${v.P&&v.P.wall>=1.8?' + wall':''}${v.P&&v.P.pool?' + pool':''}`;
+function rail(){$('#rail').innerHTML=S.versions.map((v,i)=>`<button class="vcard${v.approved?' ok':''}" type="button" data-i="${i}" aria-label="Open version ${v.id}"><img src="${v.file}" alt=""><div class="t"><b>${v.id}<em>${v.from?'from '+v.from:'linked'}</em></b><span>${vName(v)}</span><span>${clockLabel(v.time)} · ${dayLabel(v.day)}</span></div></button>`).join('');
+  $$('.vcard').forEach(b=>b.addEventListener('click',()=>openVersion(+b.dataset.i)))}
+/* the developing render: a scan line crosses the model, the render is behind it */
+let split=0,devV=null;
+function setSplit(x){const w=dev.clientWidth;split=Math.max(0,Math.min(w,x));$('#devClip').style.clipPath=`inset(0 0 0 ${split}px)`;$('#devBar').style.left=split+'px';$('#devKnob').style.left='0px';$('#devKnob').setAttribute('aria-valuenow',Math.round(split/w*100))}
+function caption(v,fresh){devV=v;$('#devK').textContent=`${v.id} · ${fresh?'new version':'linked version'}${v.from?' · revised from '+v.from:''}`;$('#devH').textContent=vName(v);
+  $('#devP').textContent=`${clockLabel(v.time)} · ${dayLabel(v.day)} · ${BUCKET[v.bucket].toLowerCase()} light · Street view. Prepared visualisation, generated ${TODAY} from this model view.`;
+  $('#devActs').innerHTML=fresh?'':`<button type="button" id="aPin">Pin a comment</button><button type="button" id="aOk" aria-pressed="${v.approved}">${v.approved?'Approved':'Mark approved'}</button><button type="button" id="aX">Back to model</button>`;
+  $$('#develop .pin,#develop .note').forEach(p=>p.remove());v.notes.forEach((n,i)=>pin(n,i));
+  if(!fresh){$('#aX').onclick=closeDev;$('#aOk').onclick=()=>{v.approved=!v.approved;caption(v);rail();presSum()};$('#aPin').onclick=()=>{pinMode=!pinMode;$('#aPin').setAttribute('aria-pressed',pinMode);$('.develop .pic').style.cursor=pinMode?'crosshair':''}}}
+function pin(n,i){const p=document.createElement('span');p.className='pin';p.textContent=i+1;p.title=n.t+' (click to remove)';p.style.cursor='pointer';p.addEventListener('click',e=>{e.stopPropagation();if(!devV)return;devV.notes.splice(i,1);caption(devV,false);presSum()});p.style.left=n.x*100+'%';p.style.top=n.y*100+'%';$('.develop .pic').appendChild(p)}
+let pinMode=false;
+$('.develop .pic').addEventListener('click',e=>{if(!pinMode||!devV)return;const r=e.currentTarget.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+  $$('#develop .note').forEach(n=>n.remove());const f=document.createElement('form');f.className='note';f.style.left=x*100+'%';f.style.top=y*100+'%';f.innerHTML='<input placeholder="Comment for this spot" aria-label="Comment" maxlength="90">';e.currentTarget.appendChild(f);const inp=f.firstChild;inp.focus();
+  f.addEventListener('click',ev=>ev.stopPropagation());f.addEventListener('submit',ev=>{ev.preventDefault();const t=inp.value.trim();f.remove();if(t){devV.notes.push({x,y,t});pin(devV.notes.at(-1),devV.notes.length-1);pinMode=false;$('#aPin').setAttribute('aria-pressed',false);$('.develop .pic').style.cursor='';presSum()}})});
+async function develop(v,fresh){$('#devImg').src=v.file;caption(v,fresh);dev.style.transform='';dev.style.opacity=1;dev.classList.add('on','sweep');const w=dev.clientWidth;setSplit(w);
+  if(reduce){setSplit(0)}else{await new Promise(done=>{const st=performance.now(),dur=2300;const step=now=>{const t=Math.min(1,(now-st)/dur),e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;setSplit(w*(1-e));t<1?requestAnimationFrame(step):done()};requestAnimationFrame(step)})}
+  dev.classList.remove('sweep');await wait(1500)}
+async function flyToRail(v){const card=$(`.vcard[data-i="${S.versions.indexOf(v)}"]`);if(!card||reduce){closeDev();return}
+  const a=dev.getBoundingClientRect(),b=card.querySelector('img').getBoundingClientRect();card.style.opacity=0;dev.style.transformOrigin='0 0';
+  const an=dev.animate([{transform:'none',opacity:1},{transform:`translate(${b.left-a.left}px,${b.top-a.top}px) scale(${b.width/a.width},${b.height/a.height})`,opacity:1}],{duration:720,easing:'cubic-bezier(.6,0,.2,1)'});
+  await an.finished;card.style.opacity=1;closeDev()}
+function closeDev(){dev.classList.remove('on');pinMode=false;$('.develop .pic').style.cursor='';devV=null}
+function openVersion(i){const v=S.versions[i];if(!v||genBusy)return;
+  /* a version is linked: opening it puts the model back in the state it was rendered from */
+  S.opt=v.opt;S.mat=v.mat;S.day=v.day;S.time=v.time;S.screen=v.screen;$('#time').value=v.time;$('#day').value=v.day;
+  S.P={...(v.P||{wall:null,pool:false,trees:false,third:false})};
+  if(villa){const st=OPTS[v.opt].style;if(villa.style!==st){villa.setStyle(st);villa.show()}villa.setMaterial(v.mat);villa.setParams(S.P,false);villa.setLouvres(v.screen);dha(false);villa.setSun(v.day,v.time);villa.setFloors('all',true);setFloorBtn('all');villa.select(null);tag(null);villa.goCam('street',true);setCamBtn('street')}
+  $$('.opt').forEach(x=>x.setAttribute('aria-pressed',x.dataset.o===v.opt));finButtons();sunUI();
+  $('#devImg').src=v.file;caption(v,false);dev.style.transform='';dev.classList.add('on');setSplit(dev.clientWidth/2)}
+{const knob=$('#devKnob');let drag=false;knob.addEventListener('pointerdown',e=>{drag=true;knob.setPointerCapture(e.pointerId)});knob.addEventListener('pointermove',e=>{if(drag)setSplit(e.clientX-dev.getBoundingClientRect().left)});knob.addEventListener('pointerup',()=>drag=false);
+ knob.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')setSplit(split-30);if(e.key==='ArrowRight')setSplit(split+30)})}
+addEventListener('keydown',e=>{if(e.key==='Escape'){if($('#zoom').classList.contains('on'))$('#zoom').classList.remove('on');else if($('#deck').classList.contains('on'))closeDeck();else if(dev.classList.contains('on')&&!genBusy)closeDev()}});
+$$('.studies img').forEach(i=>i.addEventListener('click',()=>{$('#zoom img').src=i.src;$('#zoom').classList.add('on')}));$('#zoom').addEventListener('click',()=>$('#zoom').classList.remove('on'));
+
+/* ---------- 5 · revise ---------- */
+$('#applyRev').addEventListener('click',()=>{
+  if(!S.opt){stepHint('Choose one of the three options first.');return}
+  const txt=$('#rev').value.trim();if(!txt){$('#rev').focus();return}
+  if(villa){villa.setFloors('all');setFloorBtn('all');villa.select(null);tag(null);villa.goCam('aerial');setCamBtn('aerial')}
+  const items=applyItems(understand(txt),true);S.revNote=txt;
+  if(!items.length)items.push({kind:'u',label:'Nothing to read',detail:'type the change the way the client said it'});
+  items.push({kind:'s',label:'Everything else is unchanged',detail:'plan, openings and heights are preserved'});
+  $('#changes').innerHTML=undHTML(items);$('#changes').classList.add('on');$('#genRev').style.display='flex';$('#revmsg').textContent='';
+});
+$('#genRev').addEventListener('click',()=>generate($('#revmsg'),S.versions.length?S.versions.at(-1).id:null));
+
+/* ---------- 7 · water: the monsoon specification ---------- */
+/*WATER*/const WATER=[
+{id:'roof',name:'Roof slab and falls',dir:'h',risk:'Poor slope, standing water, cracks from heat movement.',
+ fails:'Dulux Pakistan lists the causes of roof leaks as poor slope, cracks, thermal expansion and contraction, old bitumen left in place and a coating laid too thin.',
+ layers:[{n:'RCC roof slab',t:'struct',h:5},{n:'Screed laid to fall',t:'screed',h:2.2},{n:'Membrane, two coats',t:'membrane',h:.35},{n:'Protective sloped screed',t:'screed',h:1.6}],
+ steps:['Lay the screed to fall toward the drains so no water stands. Typical finished slope 1:80 to 1:100 (general practice in an Indian guide; no Pakistani code clause was found).','Scrape off old bitumen and fill cracks with 1:3 cement and sand, not putty (Dulux Pakistan).','Apply the membrane in two coats, the second at right angles to the first (Ressichem).','Flood test: 3 to 4 inches of water held for 48 to 72 hours (Ressichem).','Cover with a protective sloped screed.','If an acrylic roof coat is the finish instead: primer coat diluted up to 30%, two undiluted coats 5 to 6 hours apart at right angles, 7 days to cure, 600 to 800 microns dry film (Dulux Pakistan).'],
+ products:['<b>Ressichem Water Guard 491</b> · two-component flexible cementitious membrane; made in Karachi (S.I.T.E.)','<b>Sika Sikalastic-560 and Sikalastic-590</b> · liquid roof waterproofing; Sika lists 590 with improved ponding-water capability','<b>Sika Sikalastic-510 PK</b> · single-component acrylic liquid membrane','<b>Dulux Aquashield Waterproof Roofcoat</b> with Aquashield Pre-Treatment Coat','<b>Diamond Roof Coat</b> · acrylic elastomeric roof coating','Bituminous torch-applied membrane is the other common route; laps about 3 in. at the sides and 6 in. at the ends (Zameen)'],
+ short:'Screed to fall (typically 1:80 to 1:100) · membrane in two coats at right angles · flood test 48 to 72 hours · protective screed',
+ prodShort:'Ressichem Water Guard 491 · Sika Sikalastic-560 / 590 · Dulux Aquashield Roofcoat · Diamond Roof Coat',
+ src:'dulux.com.pk roof waterproofing guide · ressichem.com (Water Guard 491 roof and balcony page) · pak.sika.com liquid-applied membranes · diamondpaints.com · zameen.com waterproofing materials · slope from studiomatrx.org (Indian guide)'},
+{id:'parapet',name:'Parapet and roof junction',dir:'h',risk:'Parapet and slab move differently; a hairline crack opens at the joint.',
+ fails:'Parapet and slab move differently with temperature, and a hairline crack opens at the junction over a few monsoons (Indian practice guide). Dulux Pakistan also lists uncoated joints, water spouts and overflow pipes as leak points.',
+ layers:[{n:'RCC slab and parapet',t:'struct',h:5},{n:'Chamfer at the junction',t:'screed',h:1.8},{n:'Membrane over the chamfer',t:'membrane',h:.35},{n:'Protective screed',t:'screed',h:1.5}],
+ steps:['Check the screed slope and the chamfers before anything else (Ressichem).','Form or repair the chamfer where the slab meets the parapet.','Fill cracks, then coat the junction, water spouts and overflow pipes; two coats at right angles.','Flood test with the roof: 3 to 4 inches of water for 48 to 72 hours.','No chamfer size or upturn height is printed here: no sourced figure was found, so it comes from the membrane datasheet.'],
+ products:['<b>Ressichem Patch 365 / 365 Plus</b> · chamfer repair','<b>Ressichem Crack Heal 920 / 920 2K</b> · crack filler','<b>Ressichem Water Guard 491</b> · flexible cementitious membrane','<b>Sika SikaTop-550 / 551 Seal</b> · acrylic cementitious coating; 551 is the flexible reinforced version'],
+ short:'Chamfer at the slab and parapet junction · cracks filled · membrane carried over the junction, spouts and overflow pipes',
+ prodShort:'Ressichem Patch 365, Crack Heal 920, Water Guard 491 · Sika SikaTop-550 / 551 Seal',
+ src:'ressichem.com (Water Guard 491 roof and balcony page) · dulux.com.pk roof guide · pak.sika.com waterproofing mortars · studiomatrx.org (Indian guide)'},
+{id:'wet',name:'Bathroom and terrace slabs',dir:'h',risk:'Sunken slabs, failed drain seals and grout, tank overflows.',
+ fails:'Here the water comes from inside the house: sunken bathroom slabs, failed drain seals and grout, tank overflows, and pinhole joints in concealed supply pipes (Indian practice guide).',
+ layers:[{n:'RCC slab, sunken',t:'struct',h:5},{n:'Flexible cement membrane',t:'membrane',h:.35},{n:'Screed to fall to the drain',t:'screed',h:2},{n:'Tiles and grout',t:'tile',h:1}],
+ steps:['Flexible cementitious membrane under the tiles; Ressichem publishes a complete bathroom system.','On terraces and balconies, flood test before tiling: 3 to 4 inches of water for 48 to 72 hours (Ressichem).','Drain seals and grout are the listed failure points, so they are detailed and inspected, not left to the tiler.'],
+ products:['<b>Ressichem waterproofing system for bathrooms</b>','<b>Ressichem Water Guard 491</b> · two-component flexible cementitious membrane','<b>Sika SikaTop-107 Seal PK</b> · waterproofing and damp-proofing cementitious slurry','<b>Sika SikaTop-551 Seal</b> · flexible reinforced acrylic cementitious coating','<b>Sika SikaSeal-105 PK</b> · multi-purpose waterproofing slurry'],
+ short:'Flexible cementitious membrane under the tiles · screed to fall to the drain · flood test on terraces',
+ prodShort:'Ressichem bathroom system, Water Guard 491 · Sika SikaTop-107 Seal PK, SikaTop-551 Seal',
+ src:'ressichem.com waterproofing system for bathrooms · pak.sika.com waterproofing mortars · studiomatrx.org (Indian guide)'},
+{id:'plaster',name:'External plaster and paint',dir:'v',risk:'Hairline cracks and porous plaster take in wind-driven rain; paint peels.',
+ fails:'Hairline cracks of 0.1 to 0.2 mm and porous cement-sand plaster admit wind-driven rain (Indian guide; the figure is unattributed there). Dulux Pakistan says Karachi’s hot sun, high humidity and salty sea air make paint peel, crack and fade quickly, and that fresh plaster needs 28 days before paint.',
+ layers:[{n:'Masonry wall',t:'brick',h:5},{n:'Plaster + waterproofer',t:'plaster',h:1.6},{n:'Alkali-resistant primer',t:'primer',h:.3},{n:'Exterior acrylic topcoat',t:'paint',h:.3}],
+ steps:['Find and fix the water source first. Paint does not cure damp.','Plaster with an integral waterproofer in the mix.','Wait 28 days for fresh plaster to dry and cure before painting (Dulux Pakistan).','Alkali-resistant primer.','Exterior acrylic or crack-bridging topcoat.'],
+ products:['<b>Sika Sikalite-101 PK</b> · powder integral waterproofer for mortar and concrete','<b>Sika-1 PK</b> · integral waterproofing admixture','<b>Jotun Jotashield Alkali Resistant Primer</b>, then the Jotashield exterior range','<b>Dulux Weathershield Powerflexx</b> · exterior paint that covers cracks; also Weathershield and Promise Exterior'],
+ short:'Water source fixed first · plaster with integral waterproofer · 28 days’ cure · alkali-resistant primer · exterior acrylic or crack-bridging topcoat',
+ prodShort:'Sika Sikalite-101 PK, Sika-1 PK · Jotun Jotashield primer and topcoats · Dulux Weathershield Powerflexx',
+ src:'dulux.com.pk (roof guide; exterior paint for Karachi) · jotun.com/pk-en exterior products · pak.sika.com admixtures and mortars · studiomatrx.org (Indian guide)'},
+{id:'sill',name:'Window sills and chajjas',dir:'h',risk:'Flat or inward-sloping sills and flat chajjas hold water at the wall.',
+ fails:'Flat or inward-sloping sills and flat chajjas pond water against the wall and the frame (Indian practice guide).',
+ layers:[{n:'Masonry below the opening',t:'brick',h:4},{n:'Sill bed, sloped 1:20 out',t:'screed',h:1.6},{n:'Sill with drip groove',t:'tile',h:1}],
+ steps:['Slope every sill and chajja outward, minimum 1:20 (Indian guide; the sill figure is cited there to IS 3414:1968).','Run a continuous drip groove about 20 mm back from the outer face, so water drops off instead of running back to the wall.','This point is geometry before chemistry: the sources name no product for it.'],
+ products:['No product is named for sills and chajjas in the sources.','The wall around the opening takes the paint system on sheet W-04.'],
+ short:'Sills and chajjas sloped outward, minimum 1:20 · continuous drip groove about 20 mm from the face',
+ prodShort:'Geometry first; paint system as for external plaster',
+ src:'studiomatrx.org, why buildings leak (Indian guide, citing IS 3414:1968)'},
+{id:'plinth',name:'Plinth and damp-proof course',dir:'h',risk:'Missing, faulty or bridged DPC; damp climbs the wall with white salts.',
+ fails:'Rising damp comes from a damp-proof course that is missing, faulty or bridged. Capillary rise typically shows up to about 1 m, with white salts (UK reference).',
+ layers:[{n:'Plinth masonry',t:'brick',h:3.2},{n:'DPC at or above plinth level',t:'dpc',h:.4},{n:'Wall above, plastered',t:'brick',h:3.6}],
+ steps:['Damp-proof course at or just above plinth level (Indian guide, citing IS 3067:1988).','Never bridge it: no soil, paving or planters built up against the wall above the DPC line.','Sika Pakistan lists an integral admixture for the mix and a damp-proofing slurry for the face.'],
+ products:['<b>Sika-1 PK</b> · integral waterproofing admixture','<b>Sika SikaTop-107 Seal PK</b> · waterproofing and damp-proofing cementitious slurry','<b>Sika SikaTop-501 Seal</b> · cement-based capillary crystalline coating'],
+ short:'DPC at or just above plinth level · never bridged by soil or planters · integral admixture and damp-proofing slurry',
+ prodShort:'Sika-1 PK · Sika SikaTop-107 Seal PK · SikaTop-501 Seal',
+ src:'designingbuildings.co.uk rising damp (UK) · pak.sika.com admixtures and mortars · studiomatrx.org (Indian guide, citing IS 3067:1988)'}];
+const WATER_NOTE='Slopes and DPC rules are from an Indian practice guide; no Pakistani code clause was found. Product names are from the makers’ Pakistan pages, read on 17 Nov 2026; coats, coverage and cure times come from each current datasheet. Paint does not cure damp: the water source is fixed first.';const MAT_RAIN={};/*ENDWATER*/
+const HATCH={struct:'url(#hC)',screed:'url(#hS)',membrane:'#23201c',insul:'url(#hI)',tile:'url(#hT)',plaster:'url(#hS)',paint:'#a07d3e',soil:'url(#hG)',dpc:'#23201c',brick:'url(#hB)',primer:'#857d70',gravel:'url(#hG)',seal:'#a07d3e'};
+function section(w){const L=w.layers,v=w.dir==='v',n=L.length,tot=L.reduce((a,l)=>a+(l.h||1),0),X0=10,Y0=22,DW=96,DH=140;let acc=0,bands='',lab='';
+  L.forEach((l,i)=>{const f=(l.h||1)/tot,a0=acc;acc+=f;const thin=['membrane','paint','dpc','primer','seal'].includes(l.t);let x,y,ww,hh,cx,cy;
+    if(v){x=X0+DW*a0;ww=Math.max(DW*f,thin?2.2:4);y=Y0;hh=DH;cx=x+ww/2;cy=Y0+10+i*(DH-20)/Math.max(1,n-1)}else{hh=Math.max(DH*f,thin?2.2:4);y=Y0+DH-DH*a0-hh;x=X0;ww=DW;cx=X0+DW-8;cy=y+hh/2}
+    bands+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${ww.toFixed(1)}" height="${hh.toFixed(1)}" fill="${HATCH[l.t]||'url(#hS)'}" stroke="#23201c" stroke-width=".5"/>`;
+    const ly=v?cy:Y0+8+(n-1-i)*(DH-12)/Math.max(1,n-1);
+    lab+=`<path class="ld" d="M${cx.toFixed(1)} ${cy.toFixed(1)} L${(X0+DW+10).toFixed(1)} ${ly.toFixed(1)} H${X0+DW+18}"/><circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="1.6" fill="#a07d3e"/><text x="${X0+DW+21}" y="${(ly+3).toFixed(1)}">${i+1} ${l.n}</text>`});
+  return `<svg class="sec" viewBox="0 0 300 172" role="img" aria-label="Build-up section: ${w.name}"><defs>
+   <pattern id="hC" width="7" height="7" patternUnits="userSpaceOnUse"><rect width="7" height="7" fill="#e3ddd0"/><circle cx="1.5" cy="2" r=".6" fill="#6b645a"/><circle cx="5" cy="5" r=".8" fill="#857d70"/><path d="M3 1l1.2 1-1.4.6z" fill="#6b645a"/></pattern>
+   <pattern id="hS" width="5" height="5" patternUnits="userSpaceOnUse"><rect width="5" height="5" fill="#efe9dc"/><path d="M0 5L5 0" stroke="#857d70" stroke-width=".5"/></pattern>
+   <pattern id="hI" width="8" height="6" patternUnits="userSpaceOnUse"><rect width="8" height="6" fill="#f5f1e8"/><path d="M0 5L2 1L4 5L6 1L8 5" stroke="#a07d3e" stroke-width=".6" fill="none"/></pattern>
+   <pattern id="hT" width="16" height="6" patternUnits="userSpaceOnUse"><rect width="16" height="6" fill="#d9d1c3"/><path d="M0 0V6M0 0H16" stroke="#565047" stroke-width=".6"/></pattern>
+   <pattern id="hB" width="12" height="6" patternUnits="userSpaceOnUse"><rect width="12" height="6" fill="#d8c3ae"/><path d="M0 0H12M0 3H12M3 0V3M9 3V6" stroke="#6b5a4a" stroke-width=".5"/></pattern>
+   <pattern id="hG" width="6" height="6" patternUnits="userSpaceOnUse"><rect width="6" height="6" fill="#e6dfd0"/><circle cx="2" cy="2" r="1.1" fill="none" stroke="#857d70" stroke-width=".5"/><circle cx="5" cy="4.6" r=".8" fill="none" stroke="#857d70" stroke-width=".5"/></pattern></defs>
+   <text class="cap" x="${X0}" y="13">${v?'INSIDE':'RAIN ↓'}</text>${v?`<text class="cap" x="${X0+DW+4}" y="13">← OUTSIDE, RAIN</text>`:''}<text class="cap" x="292" y="13" text-anchor="end">SECTION · NOT TO SCALE</text>
+   ${bands}<rect class="ol" x="${X0}" y="${Y0}" width="${DW}" height="${DH}"/>${lab}</svg>`}
+function waterList(){$('#wmain').style.display='';$('#wdet').classList.remove('on');if(villa)villa.markActive(null);
+  $('#wlist').innerHTML=WATER.length?WATER.map((w,i)=>`<button class="wrow" type="button" data-w="${w.id}"><em>${i+1}</em><div><b>${w.name}</b><span>${w.risk}</span></div><i>→</i></button>`).join(''):'<p class="truth" style="padding:14px 0">The specification is being written from the research note.</p>';
+  $$('.wrow').forEach(b=>b.addEventListener('click',()=>waterOpen(b.dataset.w)))}
+function waterOpen(id){const w=WATER.find(x=>x.id===id);if(!w)return;if(S.step!==6)goStep(6);if(villa)villa.markActive(id);
+  $('#wmain').style.display='none';const d=$('#wdet');
+  d.innerHTML=`<button class="wback" type="button">← All six points</button><div class="k" style="margin-top:14px">Sheet W-0${WATER.indexOf(w)+1} · water-tightness</div><h3>${w.name}</h3><p>${w.fails}</p>${section(w)}
+   <h4>Build-up, in order of work</h4><ol>${w.steps.map(x=>`<li>${x}</li>`).join('')}</ol>
+   <h4>Products sold in Pakistan</h4><ul>${w.products.map(x=>`<li>${x}</li>`).join('')}</ul>
+   ${(S.opt==='aaa'&&(id==='roof'||id==='parapet'))?`<p style="margin-top:12px"><b style="color:var(--ink)">On this option:</b> the AAA manner house has tiled pitched roofs. This sheet covers the flat roofs and terraces of the Stone and Earth options; the sources give no detail for tiled roofs, so none is printed.</p>`:''}<p class="wsrc">Sources: ${w.src}</p>`;
+  d.classList.add('on');$('#panes').scrollTop=0;d.querySelector('.wback').onclick=waterList;
+  if(innerWidth<=880){const y=$('.panel').getBoundingClientRect().top+scrollY-$('.vp').offsetHeight;scrollTo({top:y})}}
+if(villa)villa.onMark(waterOpen);
+$('#wDeck').addEventListener('click',()=>{$('#openDeck').click();const i=[...$$('#track .slide')].findIndex(x=>x.classList.contains('water'));if(i>=0){deckGo(i);if(innerWidth<=880)$$('#track .slide')[i].scrollIntoView()}});
+
+/* ---------- 6 · present ---------- */
+function presSum(){const n=S.versions.length,a=S.versions.filter(v=>v.approved).length,c=S.versions.reduce((s,v)=>s+v.notes.length,0);
+  $('#presSum').textContent=n?`${n} version${n>1?'s':''} linked to the model, ${a} approved, ${c} comment${c===1?'':'s'} pinned. The sun study is captured from the live model when you open it.`:'Generate a render first; the presentation is built from the linked versions.'}
+let deckI=0,deckN=0;
+function buildDeck(){
+  const I=S.brief||interpret($('#brief').value),o=OPTS[S.opt]||OPTS.stone,last=S.versions.filter(v=>v.approved).at(-1)||S.versions.at(-1),cover=last?last.file:`renders/v2/${o.style}-${o.mat}-golden.jpg`;
+  let shots='',sunS='';
+  if(villa){const keep={cam:villa.cam,floors:villa.floors,day:S.day,time:S.time};villa.select(null);tag(null);
+    const snap=(cam,fl)=>{villa.setFloors(fl,true);villa.goCam(cam,true);return villa.snapshot(960,600)};
+    shots=[['street','all','Street front','South-west elevation'],['aerial','exploded','Exploded floors','Roof, first floor, ground floor'],['court','all','Courtyard','Open to sky, seen from the bench']].map(([c,f,t,d])=>`<figure><img src="${snap(c,f)}" alt="${t}"><figcaption><b>${t}</b>${d}</figcaption></figure>`).join('');
+    villa.setFloors('all',true);villa.goCam('aerial',true);
+    sunS=[9,13,17].map(h=>{const s=villa.setSun(S.day,h);return `<figure><img src="${villa.snapshot(960,600)}" alt="Shadows at ${clockLabel(h)}"><figcaption><b>${clockLabel(h)}</b>Azimuth ${s.az.toFixed(0)}° · altitude ${s.alt.toFixed(0)}°</figcaption></figure>`}).join('');
+    villa.setSun(keep.day,keep.time);villa.setFloors(keep.floors,true);villa.goCam('street',true);setCamBtn('street');setFloorBtn(keep.floors)}
+  const slides=[
+   `<section class="slide cover"><img src="${cover}" alt=""><div class="txt"><div class="k">Ali Arshad Associates · concept design · ${TODAY}</div><h2>The Courtyard Residence</h2><p>For client review. ${last?`Version ${last.id}, ${vName(last)}`:o.name+' option'}. Generated imagery is visualisation.</p></div></section>`,
+   `<section class="slide"><div class="cols"><div><div class="k">The brief</div><h2>What you asked for.</h2><p>“${$('#brief').value.trim().replace(/</g,'&lt;')}”</p></div><table>${I.rooms.map(r=>`<tr><td>${r[0]}</td><td>${fmt(r[1])} sq ft</td></tr>`).join('')}<tr><td><b>Enclosed</b></td><td>${fmt(I.total)} sq ft</td></tr></table></div></section>`,
+   villa?`<section class="slide"><div class="k">The model</div><h2>One house, seen three ways.</h2><div class="tri">${shots}</div></section>`:'',
+   villa?`<section class="slide"><div class="k">Sun study · Karachi 24.86°N · ${dayLabel(S.day)}</div><h2>Where the shade falls.</h2><div class="tri">${sunS}</div><p style="margin-top:18px">Solar position computed for each hour; shadows cast by the model.</p></section>`:'',
+   `<section class="slide"><div class="k">Versions</div><h2>${S.versions.length?'What we are asking you to choose.':'No versions yet.'}</h2><div class="vers">${S.versions.map(v=>`<figure><img src="${v.file}" alt=""><figcaption><b>${v.id} · ${vName(v)}</b>${clockLabel(v.time)} · ${dayLabel(v.day)}${v.from?` · revised from ${v.from}`:''}${v.approved?' · <em>approved</em>':''}${v.note?`<br>Note: “${v.note.replace(/</g,'&lt;')}”`:''}${v.notes.map((n,i)=>`<br><em>${i+1}</em> ${n.t.replace(/</g,'&lt;')}`).join('')}</figcaption></figure>`).join('')}</div></section>`,
+   WATER.length?`<section class="slide water"><div class="k">Water-tightness specification · Karachi monsoon</div><h2>Six places the rain gets in, and the build-up at each.</h2><table class="wtab"><tr><th>Element</th><th>Build-up</th><th>Products sold in Pakistan</th></tr>${WATER.map(w=>`<tr><td>${w.name}</td><td>${w.short}</td><td>${w.prodShort}</td></tr>`).join('')}</table><p style="margin-top:14px;max-width:90ch;font-size:12.5px">A layered specification, not a guarantee: workmanship, curing and each product's datasheet decide. ${WATER_NOTE}</p></section>`:'',
+   `<section class="slide"><div class="k">Next</div><h2>Approve a version, and it becomes drawings.</h2><p>Proposed: your approval and comments go back to the AAA project record through the CRM. From there the validated CAD/BIM model, not these images, carries the design forward.</p></section>`].filter(Boolean);
+  $('#track').innerHTML=slides.join('');deckN=slides.length;deckGo(0)}
+function deckGo(i){deckI=Math.max(0,Math.min(deckN-1,i));$('#track').style.transform=`translateX(${-deckI*100}%)`;$('#deckNo').textContent=`${deckI+1} / ${deckN}`;$('#deckBar').style.width=`${(deckI+1)/deckN*100}%`}
+function closeDeck(){$('#deck').classList.remove('on');document.body.style.overflow=''}
+$('#openDeck').addEventListener('click',()=>{buildDeck();$('#deck').classList.add('on');document.body.style.overflow='hidden';$('#track').scrollTop=0});
+$('#deck .pv').addEventListener('click',()=>deckGo(deckI-1));$('#deck .nx').addEventListener('click',()=>deckGo(deckI+1));$('#deck .x').addEventListener('click',closeDeck);
+addEventListener('keydown',e=>{if(!$('#deck').classList.contains('on'))return;if(e.key==='ArrowRight'||e.key===' ')deckGo(deckI+1);if(e.key==='ArrowLeft')deckGo(deckI-1)});
+
+/* ---------- boot ---------- */
+if(villa){villa.setSun(S.day,S.time);villa.showSunPath(false)}
+$('#steps').appendChild($('#stepHint'));finButtons();sunUI();presSum();dha(false);
+$('#dha').addEventListener('click',e=>{if(e.target.closest('h4')){$('#dha').classList.toggle('min')}});
+$('#emptyMsg').innerHTML=villa?'<b>An empty plot, 50 × 90 ft.</b>Read the brief and choose an option. The house is built here.':'';
+window.studio={S,villa,goStep};window.ready=true;
+</script>
+</body>
+</html>
