@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="robots" content="noindex, nofollow">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
 <title>AAA Design Studio</title>
 <meta name="description" content="Concept prototype for Ali Arshad Associates: design a residence from a brief, explore it in 3D, study the Karachi sun, change the finish and present to the client.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -552,7 +552,7 @@ const clockLabel=h=>{let hr=Math.floor(h),m=Math.round((h-hr)*60);if(m===60){hr+
 const fmt=n=>Math.round(n).toLocaleString('en-US');
 const BUCKET={noon:'High sun',golden:'Late afternoon',dusk:'Dusk'};
 /* prepared renders: one per style, finish, lighting (and with the teak screen). Filled from renders/v2/. */
-const RENDERS=new Set(/*RENDERS*/["classical-plaster-dusk", "classical-plaster-golden", "contemporary-concrete-dusk", "contemporary-concrete-golden", "contemporary-limestone-dusk", "contemporary-limestone-dusk-screen", "contemporary-limestone-golden", "contemporary-limestone-golden-screen", "contemporary-marble-dusk", "contemporary-marble-golden", "contemporary-plaster-dusk", "contemporary-plaster-golden", "contemporary-teak-dusk", "contemporary-teak-dusk-screen", "contemporary-teak-golden", "contemporary-teak-golden-screen", "contemporary-travertine-dusk", "contemporary-travertine-dusk-screen", "contemporary-travertine-golden", "contemporary-travertine-golden-screen", "classical-limestone-golden", "classical-limestone-dusk", "classical-travertine-golden", "classical-travertine-dusk", "classical-concrete-golden", "classical-concrete-dusk", "classical-teak-golden", "classical-teak-dusk", "classical-marble-golden", "classical-marble-dusk", "classical-plaster-golden-wall", "classical-plaster-dusk-wall"]/*END*/);
+const RENDERS=new Set(/*RENDERS*/["classical-plaster-dusk", "classical-plaster-golden", "contemporary-concrete-dusk", "contemporary-concrete-golden", "contemporary-limestone-dusk", "contemporary-limestone-dusk-screen", "contemporary-limestone-golden", "contemporary-limestone-golden-screen", "contemporary-marble-dusk", "contemporary-marble-golden", "contemporary-plaster-dusk", "contemporary-plaster-golden", "contemporary-teak-dusk", "contemporary-teak-dusk-screen", "contemporary-teak-golden", "contemporary-teak-golden-screen", "contemporary-travertine-dusk", "contemporary-travertine-dusk-screen", "contemporary-travertine-golden", "contemporary-travertine-golden-screen", "classical-limestone-golden", "classical-limestone-dusk", "classical-travertine-golden", "classical-travertine-dusk", "classical-concrete-golden", "classical-concrete-dusk", "classical-teak-golden", "classical-teak-dusk", "classical-marble-golden", "classical-marble-dusk", "classical-plaster-golden-wall", "classical-plaster-dusk-wall", "classical-plaster-dusk-pool", "classical-plaster-golden-pool", "contemporary-limestone-dusk-pool", "contemporary-limestone-dusk-screen-wall", "contemporary-limestone-dusk-wall", "contemporary-limestone-golden-pool", "contemporary-limestone-golden-screen-wall", "contemporary-limestone-golden-wall", "contemporary-teak-dusk-screen-wall", "contemporary-teak-golden-screen-wall", "contemporary-travertine-dusk-pool", "contemporary-travertine-dusk-screen-wall", "contemporary-travertine-golden-pool", "contemporary-travertine-golden-screen-wall"]/*END*/);
 const OPTS={
   stone:{name:'Stone',line:'Honed Jhimpir limestone, flat roofs, the upper floor carried out over the entrance.',style:'contemporary',mat:'limestone'},
   earth:{name:'Earth',line:'The same volumes in vein-cut travertine. Warmer, quieter against the street.',style:'contemporary',mat:'travertine'},
@@ -608,7 +608,7 @@ $('#readBrief').addEventListener('click',()=>{
   if(!$('#brief').value.trim()){$('#brief').placeholder='Paste or type the client\u2019s brief here first.';$('#brief').focus();return}
   const I=S.brief=interpret($('#brief').value),U=understand($('#brief').value);S.want=U;
   U.forEach(it=>{if(it.room)I.rooms.push([it.room,0]);if(it.set&&it.set.pool)I.rooms.push(['Swimming pool, front garden',0,1]);if(it.beds){I.rooms=I.rooms.filter(r=>!/^Bedroom \d/.test(r[0]));const k=I.rooms.findIndex(r=>/Master/.test(r[0]));for(let b=it.beds;b>=2;b--)I.rooms.splice(k+1,0,[`Bedroom ${b} and bath`,300]);I.beds=it.beds;I.total=I.rooms.filter(r=>!r[2]).reduce((a,r)=>a+r[1],0)}});
-  $('#undBrief').innerHTML=undHTML(U.map(it=>({...it,detail:it.kind==='m'?(it.detail?it.detail.replace('changed in the model','will be built'):'')||'built into the model with the option you choose':it.detail})));$('#undCount').textContent=`${U.filter(i=>i.kind!=='u').length} read · ${U.filter(i=>i.kind==='u').length} not understood`;
+  $('#undBrief').innerHTML=undHTML(U.map(it=>it.privacy?{...it,kind:'s',label:'Privacy from the street',detail:'street face kept mostly closed; glazing turns to the courtyard'}:({...it,detail:it.kind==='m'?(it.detail?it.detail.replace('changed in the model','will be built'):'')||'built into the model with the option you choose':it.detail})));$('#undCount').textContent=`${U.filter(i=>i.kind!=='u').length} read · ${U.filter(i=>i.kind==='u').length} not understood`;
   $('#readRooms').innerHTML=I.rooms.map((r,i)=>`<tr style="animation-delay:${i*55}ms"><td>${r[0]}</td><td>${r[1]?fmt(r[1])+' sq ft':'to size'}</td></tr>`).join('');
   $('#readTotal').textContent=`${fmt(I.total)} sq ft enclosed`;
   $('#readRules').innerHTML=I.rules.map(r=>`<li>${r}</li>`).join('');
@@ -629,7 +629,7 @@ const RULES=[
  ['pool',/(no|without|remove|delete)[\w\s]{0,12}pool|(infinity|swimming|lap|plunge)?[- ]?pool/,m=>m[1]?{kind:'m',label:'Pool removed',detail:'taken out of the model',set:{pool:false}}:{kind:'m',label:`${m[2]?m[2][0].toUpperCase()+m[2].slice(1)+' pool':'Swimming pool'} in the front garden`,detail:'placed in the model; DHA allows a pool from 500 sq yd',set:{pool:true}}],
  ['wall',/(\d+(?:\.\d+)?)\s*(?:ft|feet|foot|'|′)[\w\s-]{0,14}walls?|walls?[\w\s]{0,24}?(\d+(?:\.\d+)?)\s*(?:ft|feet|foot|'|′)|(?:boundary|compound|street|front)?\s*walls?[\w\s]{0,18}(too low|low|short|higher|taller|raise|raised|high)|(?:raise|higher|taller)[\w\s]{0,14}walls?/,m=>{const ft=Math.min(14,Math.max(4,+(m[1]||m[2]||9)));return {kind:'m',label:`Boundary wall raised to ${fi(ft*FT)}`,detail:ft>10?'changed in the model; over the DHA 10\'-0" limit, flagged':ft<8?'changed in the model; under the DHA 8\'-0" minimum, flagged':'changed in the model; inside the DHA 8\'-0" to 10\'-0" band',set:{wall:ft*FT}}}],
  ['privacy',/privacy|private|overlook|exposed|screen|seclu/,()=>({kind:'m',label:'More privacy from the street',detail:'',privacy:true})],
- ['trees',/trees?|green(er|ery)?|landscap|planting|plants|garden|lawn/,()=>({kind:'m',label:'More trees along the garden edges',detail:'four trees added in the model',set:{trees:true}})],
+ ['trees',/\btrees?\b|\bgreen(er|ery)?\b|landscap|planting|\bplants\b|\bgarden|\blawn/,()=>({kind:'m',label:'More trees along the garden edges',detail:'four trees added in the model',set:{trees:true}})],
  ['third',/third floor|second floor|another floor|extra floor|add a floor|one more floor|three (storey|stories|storeys|floors)|roof (terrace|room|pavilion|top room)|penthouse|rooftop/,()=>({kind:'m',label:'A third floor on the roof',detail:'',third:true})],
  ['style',/arch(es|ed)?\b|classical|traditional|aaa manner|colonial|modern|contemporary|minimal/,m=>({kind:'m',label:/modern|contemporary|minimal/.test(m[0])?'Contemporary manner':'Classical AAA manner, with arches',detail:'',style:/modern|contemporary|minimal/.test(m[0])?'contemporary':'classical'})],
  ['mat',/lime\s?stone|jhimpir|travertine|concrete|brutal|teak|timber|wood|marble|plaster|stucco/,m=>{const k=MATWORD.find(x=>x[0].test(m[0]))[1];return {kind:'m',label:`Facade finish: ${MATERIALS[k].name}`,detail:'F-01 walls changed in the model',mat:k}}],
@@ -708,7 +708,7 @@ $$('.opt').forEach(b=>b.addEventListener('click',async()=>{
   $$('.opt').forEach(x=>x.setAttribute('aria-pressed',x===b));
   if(villa){tag(null);villa.setStyle(o.style);villa.setMaterial(o.mat);villa.setLouvres(false);villa.hide();$('#vp').classList.add('built');
     setFloorBtn('all');villa.goCam('aerial');await villa.assemble();
-    const wish=(S.want||[]).filter(it=>it.kind==='m'&&!it.style&&!it.mat&&!it.tone);if(wish.length){applyItems(wish.map(it=>({...it})),true);await wait(1500)}else dha(false);
+    const wish=(S.want||[]).filter(it=>it.kind==='m'&&!it.style&&!it.mat&&!it.tone&&!it.privacy);if(wish.length){applyItems(wish.map(it=>({...it})),true);await wait(1500)}else dha(false);
     await villa.goCam(S.P.wall&&S.P.wall>1.6?'aerial':'street');setCamBtn(S.P.wall&&S.P.wall>1.6?'aerial':'street')}
   finButtons();$('#toModel').disabled=false;S.unlocked=Math.max(S.unlocked,2);lockSteps();
   $('#changes').classList.remove('on');$('#genRev').style.display='none';building=false;
