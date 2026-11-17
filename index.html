@@ -754,8 +754,12 @@ if(villa){villa.onPick(s=>{tag(s);if(s&&S.unlocked>=2&&S.step!==2)goStep(2)});
 
 /* ---------- 4 · render ---------- */
 const wallUp=()=>S.P.wall!=null&&S.P.wall>=1.8;
-function renderKey(){const o=OPTS[S.opt]||OPTS.stone,b=sunNow().bucket,base=`${o.style}-${S.mat}`,sc=(S.screen&&o.style==='contemporary'?'-screen':'')+(wallUp()?'-wall':S.P.pool?'-pool':'')+(S.P.third&&o.style==='contemporary'?'-third':'');
-  for(const k of [b,'golden','dusk','noon']){if(RENDERS.has(`${base}-${k}${sc}`))return {file:`renders/v2/${base}-${k}${sc}.jpg`,bucket:k,exact:k===b}}return null}
+function renderKey(){const o=OPTS[S.opt]||OPTS.stone,b=sunNow().bucket,base=`${o.style}-${S.mat}`,con=o.style==='contemporary';
+  const sc=S.screen&&con,w=wallUp(),pl=S.P.pool&&!w,th=S.P.third&&con;
+  const tries=[];if(!th){if(sc&&w)tries.push(['-screen-wall',[]]);if(w)tries.push(['-wall',sc?['the teak screen']:[]]);if(sc)tries.push(['-screen',w?['the raised wall']:[]]);if(pl)tries.push(['-pool',[]])}
+  tries.push(['',[sc&&'the teak screen',w&&'the raised wall',pl&&'the pool',th&&'the third floor'].filter(Boolean)]);
+  if(th)tries.forEach(t=>{if(!t[1].includes('the third floor'))t[1].push('the third floor')});
+  for(const [suf,miss] of tries)for(const k of [b,'golden','dusk','noon']){if(RENDERS.has(`${base}-${k}${suf}`))return {file:`renders/v2/${base}-${k}${suf}.jpg`,bucket:k,exact:k===b,miss}}return null}
 function spec(){const s=sunNow(),r=renderKey();
   $('#spec').innerHTML=`<div><span>View</span><b>Street, eye level</b></div><div><span>Finish F-01</span><b>${MATERIALS[S.mat].name}${S.screen?' + teak screen':''}</b></div><div><span>Site</span><b>wall ${villa?fi(villa.measure().wall):''}${S.P.pool?' · pool':''}${S.P.trees?' · more trees':''}${S.P.third?' · third floor':''}</b></div><div><span>Sun</span><b>${clockLabel(S.time)} · ${dayLabel(S.day)}${s.alt>0?` · alt ${s.alt.toFixed(0)}°`:' · after sunset'}</b></div><div><span>Lighting preset</span><b>${r?BUCKET[r.bucket]+(r.exact?'':' (nearest prepared)'):'none prepared'}</b></div>`}
 const jobSet=n=>$$('#job span').forEach((s,i)=>s.classList.toggle('on',i<n));
@@ -773,7 +777,7 @@ async function generate(msgEl,from){
   const v={id:'V'+(S.versions.length+1),opt:S.opt,mat:S.mat,day:S.day,time:S.time,screen:S.screen,file:r.file,bucket:r.bucket,exact:r.exact,from:from||null,note:S.revNote,notes:[],approved:false,sun:{...sunNow()},P:{...S.P}};
   await develop(v,true);
   S.versions.push(v);rail();jobSet(3);
-  msgEl.innerHTML=`<b>${v.id} linked to the model</b> in ${((performance.now()-t0)/1000).toFixed(1)} s. Prepared visualisation, generated ${TODAY} from this model view; not rendered live.${r.exact?'':` Lighting shown: ${BUCKET[r.bucket].toLowerCase()}, the nearest prepared.`}`;
+  msgEl.innerHTML=`<b>${v.id} linked to the model</b> in ${((performance.now()-t0)/1000).toFixed(1)} s. Prepared visualisation, generated ${TODAY} from this model view; not rendered live.${r.exact?'':` Lighting shown: ${BUCKET[r.bucket].toLowerCase()}, the nearest prepared.`}${r.miss&&r.miss.length?` This prepared image does not show ${r.miss.join(', ')}; the live model does.`:''}`;
   await flyToRail(v);S.unlocked=Math.max(S.unlocked,5);lockSteps();presSum();genBusy=false;
 }
 $('#gen').addEventListener('click',()=>{if(!S.opt)stepHint('Choose one of the three options first.');generate($('#jobmsg'))});
